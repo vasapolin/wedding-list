@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pagamento Pix | Ana &amp; Bruno</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#cfa117",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211d11",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen transition-colors duration-300">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e3dc] dark:border-[#3d3725] px-6 lg:px-40 py-4 bg-white dark:bg-[#2a2517]">
+<div class="flex items-center gap-4 text-[#181611] dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] font-display">Ana &amp; Bruno's Wedding Registry</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<button class="flex items-center justify-center rounded-xl h-10 bg-[#f4f3f0] dark:bg-[#3d3725] text-[#181611] dark:text-white px-3 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-xl">help_outline</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBC3Qw37oIvQb0RNE2XDdZ1ntrJWYBNdeSdt3cWb91BUnS0SlQqwg7ZMymmDwV8C51_fCDnkFxBGYV6VgRl3Ikv5QbLGpUmHWeuQlcVR_ByCX9c3p0OzmNn68I8csq5ZuAK0agTOZ3PkogwewRW28TJSfKhfEqCR6_6KnKHT69DopE36yM_VfpplYSf2kUzff0s0ZEIFQNqx776SpRMPYWwj553Q2wIg_tpszrB6wytqZ5CPGhJSY_PQdmIpazuTv0xOpMuWrOg80fS");'></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-8 lg:py-12">
+<div class="max-w-[500px] w-full bg-white dark:bg-[#2a2517] rounded-xl shadow-xl border border-[#e5e3dc] dark:border-[#3d3725] overflow-hidden">
+<!-- Status Header -->
+<div class="bg-primary/10 dark:bg-primary/5 p-6 text-center border-b border-[#e5e3dc] dark:border-[#3d3725]">
+<div class="flex flex-col items-center gap-2">
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined status-pulse">sync</span>
+<span class="text-sm uppercase tracking-widest">Aguardando Pagamento</span>
+</div>
+<h1 class="text-[#181611] dark:text-white text-4xl font-bold font-display pt-2">R$ 250,00</h1>
+<p class="text-[#887f63] dark:text-[#a69e85] text-sm font-medium">Contribuição para Lua de Mel em Paris</p>
+</div>
+</div>
+<!-- QR Code Section -->
+<div class="p-8 flex flex-col items-center text-center">
+<p class="text-[#181611] dark:text-white text-base mb-6">
+                        Abra o app do seu banco e escaneie o código abaixo:
+                    </p>
+<div class="relative p-4 bg-white rounded-lg border-2 border-primary/20 mb-8">
+<div class="w-64 h-64 bg-center bg-no-repeat bg-cover" data-alt="Large clear QR Code for Pix payment" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9sUXX8dPcIUp2kNNgd0s-F1GqSvtXehgY0TWou-jXeDg2jE_k2HRZ1syN833VJ9pmmT6uM-skYPLxC6nGiJm9Y04G96Ac-pTmQDjXeXRGaFEkHFK4crwjEKtyE4qsnZxH4llBsamn5x19qxfY1p77VtF4GMcGdWztgbeJiLayUDaombeFns9JNnOXeG1x12DGRCevvp3vKz02vAti0xVD8wDeP4HwY9_lior606ZZwgkSffaQsZMd6bIdPVvwNV9vIOgY7MIWItNM");'></div>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#887f63] dark:text-[#a69e85] mb-8">
+<span class="material-symbols-outlined text-base">timer</span>
+<span>Este código expira em 30:00 minutos</span>
+</div>
+<!-- Copy Paste Section -->
+<div class="w-full space-y-3">
+<p class="text-left text-sm font-semibold text-[#181611] dark:text-white px-1">Ou use o Pix Copia e Cola</p>
+<div class="flex w-full items-stretch rounded-xl overflow-hidden border border-[#e5e3dc] dark:border-[#3d3725]">
+<input class="flex-1 bg-[#fcfcfb] dark:bg-[#3d3725] text-[#181611] dark:text-white text-sm px-4 h-12 outline-none border-none" readonly="" value="00020126580014br.gov.bcb.pix013697920374-9842-4b2a-89a3-c5b4d7f5a9f25204000053039865406250.005802BR5915ANA_BRUNO_CASAM6009SAO_PAULO62070503***6304E2D8"/>
+<button class="bg-primary text-white flex items-center justify-center px-4 hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Fallback Actions -->
+<div class="px-8 pb-8 flex flex-col gap-4">
+<button class="w-full bg-primary text-white font-bold h-12 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all">
+<span>Já paguei</span>
+</button>
+<div class="flex justify-between items-center px-2">
+<a class="text-xs text-primary font-semibold flex items-center gap-1 hover:underline" href="#">
+<span class="material-symbols-outlined text-sm">support_agent</span>
+                            Preciso de ajuda
+                        </a>
+<div class="flex items-center gap-1 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="text-[10px] uppercase font-bold text-[#181611] dark:text-white">Powered by</span>
+<div class="h-4 w-12 bg-center bg-contain bg-no-repeat" data-alt="Asaas payment provider logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArz_718YXYS-k45HqLuJazYJMP2kOTaGfnsNY3D8kyK3yMHYVl7MsrQJV1zRRRCEE01wEt7HwXWWTntovmXKq9AZE3rwcZ5XriKAXAFvXBFNUMoEAVLeliKZ0QvAaDvOfCHea7ljEdN__bDLAwNTCmvciYWbMr4R1lSYCIEYHqBv8XTIF6dA1QL0aA4pDIzftnRwB4i8MBjaS_pFAFNFGbBFrGIyBAfeFpaSlENTfzcrSI8xZ40Z5miOVnrUg5t7tQLVKFAGSQ0xfn");'></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Decorative -->
+<div class="mt-8 flex items-center gap-4 text-[#887f63] dark:text-[#a69e85] text-sm">
+<span class="material-symbols-outlined">lock</span>
+<p>Pagamento 100% seguro processado pelo Asaas</p>
+</div>
+</main>
+<!-- Fixed Bottom Helper for Mobile -->
+<div class="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md dark:bg-black/80 border-t border-[#e5e3dc] dark:border-[#3d3725]">
+<button class="w-full bg-primary text-white font-bold h-12 rounded-xl flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">content_copy</span>
+                Copiar código Pix
+            </button>
+</div>
+</div>
+</body></html>

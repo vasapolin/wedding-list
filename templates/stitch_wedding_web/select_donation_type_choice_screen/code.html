@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gesto de Carinho - Maria &amp; João</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#cfa117",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211d11",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: #cfa117;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#181611] dark:text-white">
+<div class="flex h-full min-h-screen flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e2da] dark:border-white/10 px-6 lg:px-20 py-4 bg-white/50 dark:bg-black/20 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">celebration</span>
+</div>
+<h2 class="text-[#181611] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Maria &amp; João</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#181611] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">Lista de Presentes</a>
+<a class="text-[#181611] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">Sobre os Noivos</a>
+<a class="text-[#181611] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">Localização</a>
+</nav>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 bg-white border border-[#e5e2da] dark:bg-white/5 dark:border-white/10 text-[#181611] dark:text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+<span>Voltar</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center px-4 py-12 lg:py-20">
+<div class="max-w-[960px] w-full flex flex-col items-center">
+<!-- Welcome Text -->
+<div class="text-center mb-12">
+<h1 class="text-[#181611] dark:text-white text-4xl lg:text-5xl font-bold tracking-tight mb-4">Gesto de Carinho</h1>
+<p class="text-[#887f63] dark:text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
+                        Escolha o que preferir, qualquer valor ajuda. Sua presença e carinho são o que mais importam para nós.
+                    </p>
+</div>
+<!-- Split Cards Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+<!-- Choice 1: Items -->
+<a class="group card-hover flex flex-col items-center p-10 bg-white dark:bg-white/5 border-2 border-transparent rounded-xl shadow-xl shadow-black/[0.03] text-center" href="#">
+<div class="mb-8 p-6 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-5xl">redeem</span>
+</div>
+<h3 class="text-2xl font-bold text-[#181611] dark:text-white mb-4">Escolher itens</h3>
+<p class="text-[#887f63] dark:text-gray-400 text-base leading-relaxed mb-8">
+                            Navegue pela nossa lista de presentes e escolha algo especial que combine com nossa nova casa.
+                        </p>
+<div class="mt-auto inline-flex items-center gap-2 text-primary font-bold group-hover:translate-x-1 transition-transform">
+                            Ver Lista Completa
+                            <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</div>
+</a>
+<!-- Choice 2: Direct Donation -->
+<a class="group card-hover flex flex-col items-center p-10 bg-white dark:bg-white/5 border-2 border-transparent rounded-xl shadow-xl shadow-black/[0.03] text-center" href="#">
+<div class="mb-8 p-6 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-5xl">volunteer_activism</span>
+</div>
+<h3 class="text-2xl font-bold text-[#181611] dark:text-white mb-4">Doação direta</h3>
+<p class="text-[#887f63] dark:text-gray-400 text-base leading-relaxed mb-8">
+                            Contribua com qualquer valor de forma rápida e segura via PIX ou cartão para nossa lua de mel.
+                        </p>
+<div class="mt-auto inline-flex items-center gap-2 text-primary font-bold group-hover:translate-x-1 transition-transform">
+                            Doar Agora
+                            <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</div>
+</a>
+</div>
+<!-- Footer / Trust Section -->
+<div class="mt-16 flex flex-col items-center gap-4">
+<div class="flex items-center gap-3 text-xs uppercase tracking-widest text-[#887f63] font-semibold">
+<span class="material-symbols-outlined text-lg">shield_with_heart</span>
+                        Ambiente Seguro
+                    </div>
+<div class="flex items-center gap-6 grayscale opacity-60">
+<div class="h-6 w-auto bg-contain bg-no-repeat bg-center" data-alt="Logotipo da plataforma de pagamentos Asaas" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCglNPzw2jyGPreRuSoSHDOHWOl-C7WjCu9MJOTmgwxrZgmsY8dHmggQ8OPMrxtjt68zui_Rk9jPJTT-wXxPXnwCLc4xHQmOagoeE9aQx-xnnekvxE_HWXJWUDghb_Lmi-VqAWBePR-IjVCpOr9hpy7emgxHkL14VsMpwhoiQM-g16sy4RBAsJlWPfyDEJOyYcT_1xuW4QDXtfYs7xAnMHmjh3rfMRX7DYRxFeVhBvB4KPmfM2Cdsm3m20_XL-4_k7cl-xZt7uI9zog');"></div>
+</div>
+<p class="text-[#887f63] dark:text-gray-500 text-sm mt-4">
+                        Pagamento 100% seguro processado via Asaas
+                    </p>
+</div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<footer class="py-10 border-t border-[#e5e2da] dark:border-white/10 text-center">
+<p class="text-[#887f63] text-xs">© 2024 Casamento de Maria &amp; João. Todos os direitos reservados.</p>
+</footer>
+</div>
+</body></html>
