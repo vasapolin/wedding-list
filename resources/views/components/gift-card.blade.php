@@ -1,22 +1,51 @@
-@props(['name', 'price', 'image', 'percentage' => 0, 'amountRaised' => '0', 'description' => '', 'badge' => '', 'installment' => ''])
+@props(['name', 'price', 'image' => '', 'percentage' => 0, 'amountRaised' => '0', 'description' => '', 'badge' => ''])
 
-<div class="group bg-white dark:bg-background-dark rounded-2xl overflow-hidden border border-[#e5e3dc] dark:border-[#3a3526] shadow-sm hover:shadow-md transition-all flex flex-col">
-    <div class="h-64 bg-center bg-cover relative" style="background-image: url('{{ $image }}')">
+<div class="bg-surface border border-surface-border hover:border-coastal/40 transition-colors duration-300 flex flex-col">
+
+    {{-- Image area --}}
+    <div class="relative aspect-[4/3] overflow-hidden">
+        @if($image)
+            <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('{{ $image }}')"></div>
+        @else
+            <div class="absolute inset-0 bg-surface-light"></div>
+        @endif
+
         @if($badge)
-            <div class="absolute top-3 right-3 bg-white/90 dark:bg-background-dark/90 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase text-primary">{{ $badge }}</div>
-        @endif
-    </div>
-    <div class="p-6 space-y-4 flex flex-col flex-1">
-        <div class="flex justify-between items-start">
-            <div>
-                <h3 class="text-lg font-bold group-hover:text-primary transition-colors">{{ $name }}</h3>
-                <p class="text-sm text-primary font-semibold">R$ {{ $price }}</p>
+            <div class="absolute top-3 right-3 bg-coastal px-2.5 py-1">
+                <span class="font-sans text-[10px] tracking-widest uppercase text-black">{{ $badge }}</span>
             </div>
-        </div>
-        @if($description)
-            <p class="text-muted text-sm flex-1">{{ $description }}</p>
         @endif
-        <x-progress-bar :percentage="$percentage" :label="$percentage . '% Alcancado'" :amountText="'R$ ' . $amountRaised" />
-        <a href="/doar" class="block w-full text-center bg-primary/10 hover:bg-primary/20 text-primary py-3 rounded-xl font-bold transition-all mt-auto">Contribuir</a>
     </div>
+
+    {{-- Content area --}}
+    <div class="p-5 flex flex-col gap-3 flex-1">
+
+        <div class="flex flex-col gap-0.5">
+            <h3 class="font-serif text-lg text-vanilla leading-snug">{{ $name }}</h3>
+            <p class="font-sans text-sm text-coastal">R$ {{ $price }}</p>
+        </div>
+
+        @if($description)
+            <p class="font-sans text-sm text-ink-muted leading-relaxed">{{ $description }}</p>
+        @endif
+
+        <div class="mt-auto flex flex-col gap-3">
+            <x-progress-bar
+                :percentage="$percentage"
+                :label="$percentage . '% alcançado'"
+                :amountText="'R$ ' . $amountRaised"
+            />
+
+            @if($percentage >= 100)
+                <span class="font-sans text-sm text-ink-muted tracking-wide">Concluído</span>
+            @else
+                <a href="/doar" class="group/link inline-flex items-center gap-2 font-sans text-sm text-coastal hover:text-coastal-light transition-colors">
+                    Contribuir
+                    <span class="inline-block translate-y-px transition-transform duration-200 group-hover/link:translate-x-0.5">&rarr;</span>
+                </a>
+            @endif
+        </div>
+
+    </div>
+
 </div>
