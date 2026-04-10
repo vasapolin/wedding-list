@@ -1,277 +1,331 @@
 @extends('layouts.app')
 
-@section('title', 'Lista de Presentes - Ana & Lucas')
+@section('title', 'Lista de Presentes - Laura & Victor')
 
 @section('content')
-<div class="flex flex-col min-h-[calc(100vh-5rem)]">
-    {{-- Content Area with Sidebar --}}
-    <div class="flex-1 max-w-[1440px] mx-auto w-full flex">
-        {{-- Items Registry Section --}}
-        <div class="flex-1 px-6 lg:px-20 py-8 xl:border-r border-[#f4f3f0] dark:border-white/10">
-            {{-- Title & Filters --}}
-            <div class="mb-10" x-data="{ activeFilter: 'all' }">
-                <h1 class="text-3xl font-black tracking-tight mb-2">Lista de Presentes Simbolicos</h1>
-                <p class="text-muted max-w-2xl mb-8">Ajude-nos a construir nossa vida juntos contribuindo com experiencias e itens para nossa nova casa. Cada presente aqui e uma parte do nosso sonho.</p>
-                <div class="flex flex-wrap gap-3 overflow-x-auto pb-2">
-                    <button @click="activeFilter = 'all'" :class="activeFilter === 'all' ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 border border-[#f4f3f0] dark:border-white/10 hover:border-primary'" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all">
-                        Todos os Itens
-                    </button>
-                    <button @click="activeFilter = '100'" :class="activeFilter === '100' ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 border border-[#f4f3f0] dark:border-white/10 hover:border-primary'" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all">
-                        Ate R$ 100
-                    </button>
-                    <button @click="activeFilter = '500'" :class="activeFilter === '500' ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 border border-[#f4f3f0] dark:border-white/10 hover:border-primary'" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all">
-                        R$ 100 - R$ 500
-                    </button>
-                    <button @click="activeFilter = 'premium'" :class="activeFilter === 'premium' ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 border border-[#f4f3f0] dark:border-white/10 hover:border-primary'" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all">
-                        Cotas Premium
-                    </button>
-                    <button @click="activeFilter = 'honeymoon'" :class="activeFilter === 'honeymoon' ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 border border-[#f4f3f0] dark:border-white/10 hover:border-primary'" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all">
-                        Lua de Mel
-                    </button>
-                </div>
-            </div>
+<div class="max-w-[1440px] mx-auto w-full xl:flex xl:items-start">
 
-            {{-- Gift Cards Grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {{-- Card 1 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden relative" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC56CL6WHzMHq89c2ctX4XZarlrD2LE4-YoTXdNJN1tgilPCeRSqKIhba3BHVYPHu4ywe4pzMQkDSeUH-DgZH1amUziV6iMOvwcRcy02bLtaNtD8uCbQ28afxnK4pnh-HOmzoUDFM-y68hI9PZY5KmLe8ZcTU7v22ldz8Ui8D2gO1ab2mR7qDRyTew2YpTvaWZwWiSp9xujFbpNHkehosZB9pgfV-j2lPzX7VEPm6anN7FamuF_TvEBPE65k9mUtJUw2jkCaCfaAR2t')">
-                        <div class="absolute top-3 right-3 bg-white/90 dark:bg-background-dark/90 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase text-primary">Mais Pedido</div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Jantar Romantico em Paris</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Um jantar especial para celebrarmos nossa uniao na cidade luz.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">75% Presenteado</span>
-                                <span class="text-muted">R$ 150 / R$ 200</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full" style="width: 75%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 50,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Ou 2x de R$ 25,00</span>
-                            </div>
-                            <a href="/doar" class="bg-primary hover:bg-primary/90 text-white size-10 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {{-- Card 2 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQCTQ877bsOkXEkkjZXwYxDAtDtvlnjd0KptqzfyedRvhOw-kQ1VDNs1jM05Tcqxp_LfYazo-vUpe9wXYxf4UKEtZM5s1wiZm3OHL0iqGTrzS-6jOEFAbJwEZchvHu0FUUuQJvbYdlx4TJHz6Iv-ihQyTR9Ry-1U31P_T2WeBMoM9O7O-FlQepMUB5xT0C4vkKECyf5xiXqetou4_aGCTc0ohz979qrzyF3SYCowvRpIcEVPIjAeusV_drOPkjjWTors7SCdYwQ0on')"></div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Passagens Aereas</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Contribuicao para as passagens da nossa viagem dos sonhos.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">30% Presenteado</span>
-                                <span class="text-muted">R$ 600 / R$ 2.000</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full" style="width: 30%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 200,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Cota unica</span>
-                            </div>
-                            <a href="/doar" class="bg-primary hover:bg-primary/90 text-white size-10 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {{-- Card 3 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD4Y1FKcN9gT9-z-v0xdBiGinQ2G1UYCQm_830mLlcHuMU7oQHdga2GBRPHkz_c5oRRA8fGmV-iyYpoaRPUMwTKb5x9s01cpa8lTSFNHu_lnFr7P5nXX_A8ew59X_SMl2z_QTv5z6i2jpJH2F4epIoT3qF6D84MUiEKgUwqAIXaulqubTHuhB7tZVT92YFLK4IxQhMBr-ktJq4meU3WlSJgQW4-d_t_6scSvZBbCGlpwyEP9-KyrwcDLijnTMasVxyGi9-eUQYJ90ll')"></div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Kit Cozinha Premium</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Ajudando a equipar nosso novo lar com utensilios de qualidade.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">100% Presenteado</span>
-                                <span class="text-green-500">CONCLUIDO</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 120,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Ou 3x de R$ 40,00</span>
-                            </div>
-                            <button class="bg-[#f4f3f0] dark:bg-white/10 text-muted cursor-not-allowed size-10 rounded-xl flex items-center justify-center transition-all" disabled>
-                                <span class="material-symbols-outlined">check</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {{-- Card 4 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwEQlu9uq-3VeTvsTphnljdhisfwbxZLx1YNq2deoPuJgjkMs_f8RDHWk5PM_TsLZyLwZjeUgS9wxfDGGzRtCWY1c1Mivt5N7UdWICUcpTizBIAzUBHBmLdoFERP_zVGbH2tL2tLyUAu7p0bdWEysYHV0jcgd9uVwn5KFm8pZpaDnEpgMW_lMj4X7_7zSR5EbeNl-6g09wDJ-0ZQCWfVAaD70BCSWWRK-WhdZqZvy1iCrgpMiy_ErbiBKFMlOIsJ9sNplgnAolG5e4')"></div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Dia de Spa para o Casal</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Um momento de relaxamento pos-casamento para recarregarmos as energias.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">15% Presenteado</span>
-                                <span class="text-muted">R$ 45 / R$ 300</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full" style="width: 15%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 150,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Cota Unica</span>
-                            </div>
-                            <a href="/doar" class="bg-primary hover:bg-primary/90 text-white size-10 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {{-- Card 5 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden relative" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAM0XvT7a9-f2KSYpD0GAMi-bEzEtobUSwQ_vLQUFKqRKbYywq6I91peaXHtGJK_Xe1v3PDD8KlRLi2FaKbFk4I1jxLx7gMU1zFh2Y-1xn1F6DteMNBx0ZVnaeURykCGHSm8nQVGRM19oXvMqQMiC3QScWYyaCrkxQ0ADtXarWLHT8kzEeIn4w4w4xVDKRFaF-qSyleJ7nK2mw8JR4ZUjGlRT_3npsH770pF6T6o_7smo4iyfKsxDRj1aosaRNaIUXQOutj2fZrn5L_')">
-                        <div class="absolute top-3 right-3 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">Essencial</div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Adega dos Noivos</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Ajude-nos a iniciar nossa colecao de vinhos para momentos especiais.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">50% Presenteado</span>
-                                <span class="text-muted">R$ 250 / R$ 500</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full" style="width: 50%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 80,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Ou 4x de R$ 20,00</span>
-                            </div>
-                            <a href="/doar" class="bg-primary hover:bg-primary/90 text-white size-10 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {{-- Card 6 --}}
-                <div class="group bg-white dark:bg-white/5 rounded-xl overflow-hidden border border-[#f4f3f0] dark:border-white/10 hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="aspect-[4/3] bg-cover bg-center overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtFSFgEapZDsCOb0Q_2heZlSjxNbH-_iomx5Ww7JZotGSWsRb6HDiGs6bVjXQk7vpQG0Eq2bMvGMiakgEbh-mRGXT6rlNb_rPOjtbTjVPpsmV013VcrAn72r8dL9IxONDFqg2gp1PbvB0TXXxRddHO1BK-pmvwtNpP2xleM3iZ3lfgAEr61NCgLfsggD8hYEn_Y1wmPUT4t7Aw8VSt8Ij-QxeQhiTtxt0508iH66DMtFAsLs5xKIWighcljjzBChuFjRzgj5tKA90i')"></div>
-                    <div class="p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold group-hover:text-primary transition-colors">Enxoval da Casa</h3>
-                        <p class="text-muted text-sm mt-1 mb-4 flex-1">Roupas de cama, banho e detalhes que farao nossa casa mais aconchegante.</p>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-[11px] font-bold mb-1 uppercase tracking-wider">
-                                <span class="text-primary">85% Presenteado</span>
-                                <span class="text-muted">R$ 850 / R$ 1.000</span>
-                            </div>
-                            <div class="h-2 w-full bg-[#f4f3f0] dark:bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full" style="width: 85%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#f4f3f0] dark:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-bold">R$ 100,00</span>
-                                <span class="text-[10px] text-muted font-medium uppercase tracking-tighter">Cota Unica</span>
-                            </div>
-                            <a href="/doar" class="bg-primary hover:bg-primary/90 text-white size-10 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+    {{-- Main content area --}}
+    <div class="flex-1 px-6 lg:px-16 xl:pr-12 xl:border-r border-surface-border">
+
+        {{-- Header --}}
+        <header class="pt-28 pb-10">
+            <p class="font-sans text-xs tracking-[0.2em] uppercase text-coastal mb-4">Laura &amp; Victor · 2026</p>
+            <h1 class="font-serif text-5xl md:text-6xl text-ink leading-tight mb-4">Lista de Presentes</h1>
+            <div class="decorative-line w-24 mb-6"></div>
+            <p class="font-sans text-ink-muted text-base max-w-md leading-relaxed">
+                Cada presente simboliza um pedaço do nosso sonho compartilhado. Obrigado por fazer parte deste momento.
+            </p>
+        </header>
+
+        {{-- Filters --}}
+        <div x-data="{ activeFilter: 'todos' }" class="mb-10">
+            <div class="flex flex-wrap gap-2">
+                <button
+                    @click="activeFilter = 'todos'"
+                    :class="activeFilter === 'todos' ? 'bg-coastal text-black border-coastal' : 'bg-transparent text-ink-muted border-surface-border hover:border-coastal/50'"
+                    class="font-sans text-sm px-5 py-2 rounded-full border transition-all duration-200 whitespace-nowrap cursor-pointer"
+                >
+                    Todos
+                </button>
+                <button
+                    @click="activeFilter = 'cem'"
+                    :class="activeFilter === 'cem' ? 'bg-coastal text-black border-coastal' : 'bg-transparent text-ink-muted border-surface-border hover:border-coastal/50'"
+                    class="font-sans text-sm px-5 py-2 rounded-full border transition-all duration-200 whitespace-nowrap cursor-pointer"
+                >
+                    Até R$ 100
+                </button>
+                <button
+                    @click="activeFilter = 'medio'"
+                    :class="activeFilter === 'medio' ? 'bg-coastal text-black border-coastal' : 'bg-transparent text-ink-muted border-surface-border hover:border-coastal/50'"
+                    class="font-sans text-sm px-5 py-2 rounded-full border transition-all duration-200 whitespace-nowrap cursor-pointer"
+                >
+                    R$ 100 – R$ 500
+                </button>
+                <button
+                    @click="activeFilter = 'premium'"
+                    :class="activeFilter === 'premium' ? 'bg-coastal text-black border-coastal' : 'bg-transparent text-ink-muted border-surface-border hover:border-coastal/50'"
+                    class="font-sans text-sm px-5 py-2 rounded-full border transition-all duration-200 whitespace-nowrap cursor-pointer"
+                >
+                    Premium
+                </button>
+                <button
+                    @click="activeFilter = 'lua'"
+                    :class="activeFilter === 'lua' ? 'bg-coastal text-black border-coastal' : 'bg-transparent text-ink-muted border-surface-border hover:border-coastal/50'"
+                    class="font-sans text-sm px-5 py-2 rounded-full border transition-all duration-200 whitespace-nowrap cursor-pointer"
+                >
+                    Lua de Mel
+                </button>
             </div>
         </div>
 
-        {{-- Side Cart Drawer --}}
-        <aside class="w-[380px] hidden xl:flex flex-col bg-white dark:bg-background-dark/50 sticky top-20 h-[calc(100vh-5rem)] border-l border-[#f4f3f0] dark:border-white/10">
-            <div class="p-6 border-b border-[#f4f3f0] dark:border-white/10 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">shopping_bag</span>
-                    <h2 class="font-bold text-lg">Seu Carrinho</h2>
-                </div>
-                <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-bold">2 Itens</span>
-            </div>
-            <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-                {{-- Cart Item 1 --}}
-                <div class="flex gap-4">
-                    <div class="size-20 rounded-lg bg-cover bg-center shrink-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdNs9P4nc2clzWbxc4qC44QUu4cFG__ki38fFqVRZfAtq0x5Z4_1sLZvFnYurTyYGNbYNWOa7mtpLyLHnFjCcORT6Gsdt5lVbhTkl2STBfMljpV0NQfOtYYn_QMn_BF_fwwheLYbyUBS_5S2APF45t5De8odrRkx7qZ4uVanf1AoTQg4FEYhe1D74f-mc2aCaXUR4tNn3lp7RwtI_rhpJzZ2ZNZ0Q6Ak8klwVeeTWk8b3VYhnL9zJT5Siu8H0ukx1kmUxv8B0jFGCu')"></div>
-                    <div class="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                            <h4 class="text-sm font-bold leading-none">Jantar em Paris</h4>
-                            <p class="text-xs text-muted mt-1">1x R$ 50,00</p>
+        {{-- Gift Cards Grid --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 pb-24">
+
+            {{-- Card 1: Kit de Panelas --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Kit de Panelas Premium</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Para cozinharmos juntos cada refeição do nosso novo lar.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>75% presenteado</span>
+                            <span>R$ 510 / R$ 680</span>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-bold text-primary">R$ 50,00</span>
-                            <button class="text-muted hover:text-red-500 transition-colors">
-                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 75%"></div>
                         </div>
                     </div>
-                </div>
-                {{-- Cart Item 2 --}}
-                <div class="flex gap-4">
-                    <div class="size-20 rounded-lg bg-cover bg-center shrink-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZDXpPl0Vrx_3YvzTivAARS-WNJnhWFs09tw7UgM4OlAEb78TarEtJ_QnJ0En1G7nGUVPEpbi1QkitLhm1y9Z6oKDVEo_hpS1b5sV_qsY05QC0V48SX4v-wc-bqc2duT5_1a8bl5f7w57iJjTvm_WiV2Wz6WZIYg7P_wQCCbgAggWESyRUV0Q_HOZssxDMilfDq3yZooZUIAj4weTTT7xKAkNwTSE1JMM_mJo4fLbBY-Cx_efpXoZpbqwMUXER_sA_AZ4VYPePILFn')"></div>
-                    <div class="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                            <h4 class="text-sm font-bold leading-none">Passagens Aereas</h4>
-                            <p class="text-xs text-muted mt-1">1x R$ 200,00</p>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-bold text-primary">R$ 200,00</span>
-                            <button class="text-muted hover:text-red-500 transition-colors">
-                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
-                        </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 680,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
                     </div>
                 </div>
-                {{-- Message to couple --}}
-                <div class="p-4 bg-primary/5 rounded-xl border border-primary/10">
-                    <p class="text-[11px] font-bold text-primary uppercase tracking-wider mb-2">Mensagem aos noivos</p>
-                    <textarea class="w-full bg-white dark:bg-white/5 border-none rounded-lg text-xs placeholder:text-muted focus:ring-1 focus:ring-primary/50 resize-none h-20" placeholder="Deixe um recado carinhoso..."></textarea>
+            </div>
+
+            {{-- Card 2: Máquina de Café --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Máquina de Café Espresso</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Nossos cafés da manhã merecem começar com perfeição.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>40% presenteado</span>
+                            <span>R$ 480 / R$ 1.200</span>
+                        </div>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 1.200,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
+                    </div>
                 </div>
             </div>
-            {{-- Footer Summary --}}
-            <div class="p-6 bg-white dark:bg-background-dark border-t border-[#f4f3f0] dark:border-white/10">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-muted text-sm">Subtotal</span>
-                    <span class="font-medium text-sm">R$ 250,00</span>
-                </div>
-                <div class="flex items-center justify-between mb-6">
-                    <span class="text-lg font-bold">Total</span>
-                    <span class="text-xl font-black text-primary">R$ 250,00</span>
-                </div>
-                <a href="/checkout" class="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 transition-all active:scale-[0.98]">
-                    <span>Continuar para pagamento</span>
-                    <span class="material-symbols-outlined">arrow_forward</span>
-                </a>
-                <div class="mt-4 flex items-center justify-center gap-2 text-muted">
-                    <span class="material-symbols-outlined text-[16px]">lock</span>
-                    <span class="text-[10px] font-medium uppercase tracking-widest">Pagamento seguro via ASAAS</span>
+
+            {{-- Card 3: Enxoval de Cama --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Enxoval de Cama</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Roupas de cama em algodão egípcio para noites de sonho.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>90% presenteado</span>
+                            <span>R$ 405 / R$ 450</span>
+                        </div>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 450,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
+                    </div>
                 </div>
             </div>
-        </aside>
+
+            {{-- Card 4: Dia de Spa --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Dia de Spa para o Casal</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Um momento de relaxamento pós-casamento para recarregarmos as energias.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>15% presenteado</span>
+                            <span>R$ 45 / R$ 300</span>
+                        </div>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 15%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 300,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Card 5: Adega dos Noivos --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Adega dos Noivos</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Ajude-nos a iniciar nossa coleção de vinhos para momentos especiais.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>50% presenteado</span>
+                            <span>R$ 250 / R$ 500</span>
+                        </div>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 500,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Card 6: Enxoval de Banho --}}
+            <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div
+                    class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    style="background-image: url('https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=80')"
+                ></div>
+                <div class="p-5 flex flex-col flex-1 gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl text-ink leading-snug mb-1">Enxoval de Banho</h3>
+                        <p class="font-sans text-sm text-ink-muted leading-relaxed">
+                            Toalhas felpudas e detalhes que farão nosso banheiro mais aconchegante.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-sans text-xs text-ink-muted mb-2">
+                            <span>85% presenteado</span>
+                            <span>R$ 340 / R$ 400</span>
+                        </div>
+                        <div class="h-1 w-full bg-surface-border overflow-hidden">
+                            <div class="h-full bg-coastal" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
+                        <span class="font-sans text-sm text-coastal">R$ 400,00</span>
+                        <a href="/doar" class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal">
+                            Contribuir
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+
+    {{-- Sidebar Cart (xl only) --}}
+    <aside class="hidden xl:flex flex-col w-[340px] shrink-0 sticky top-0 h-screen bg-surface border-l border-surface-border">
+
+        {{-- Cart header --}}
+        <div class="px-7 pt-28 pb-6 border-b border-surface-border">
+            <p class="font-sans text-xs tracking-[0.2em] uppercase text-coastal mb-1">Seleção</p>
+            <h2 class="font-serif text-2xl text-ink">Seu Carrinho</h2>
+        </div>
+
+        {{-- Cart items --}}
+        <div class="flex-1 overflow-y-auto px-7 py-6 flex flex-col gap-5">
+
+            {{-- Item 1 --}}
+            <div class="flex gap-4 pb-5 border-b border-surface-border">
+                <div
+                    class="w-16 h-16 shrink-0 bg-cover bg-center"
+                    style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80')"
+                ></div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <p class="font-serif text-sm text-ink leading-snug">Kit de Panelas Premium</p>
+                        <p class="font-sans text-xs text-ink-muted mt-0.5">1 cota</p>
+                    </div>
+                    <span class="font-sans text-sm text-coastal">R$ 100,00</span>
+                </div>
+            </div>
+
+            {{-- Item 2 --}}
+            <div class="flex gap-4 pb-5 border-b border-surface-border">
+                <div
+                    class="w-16 h-16 shrink-0 bg-cover bg-center"
+                    style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=200&q=80')"
+                ></div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <p class="font-serif text-sm text-ink leading-snug">Dia de Spa para o Casal</p>
+                        <p class="font-sans text-xs text-ink-muted mt-0.5">1 cota</p>
+                    </div>
+                    <span class="font-sans text-sm text-coastal">R$ 150,00</span>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Cart footer --}}
+        <div class="px-7 py-6 border-t border-surface-border">
+            <div class="flex items-center justify-between mb-1">
+                <span class="font-sans text-sm text-ink-muted">Subtotal</span>
+                <span class="font-sans text-sm text-ink-light">R$ 250,00</span>
+            </div>
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-sans text-sm text-ink-light">Total</span>
+                <span class="font-serif text-2xl text-ink">R$ 250,00</span>
+            </div>
+            <a
+                href="/doar"
+                class="block w-full bg-coastal text-black font-sans text-sm text-center py-3.5 hover:bg-coastal-dark transition-colors duration-200"
+            >
+                Continuar para pagamento
+            </a>
+        </div>
+
+    </aside>
+
 </div>
 
-{{-- Mobile Floating Cart Button --}}
+{{-- Mobile floating cart button --}}
 <div class="xl:hidden fixed bottom-6 right-6 z-50">
-    <button class="size-16 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center relative">
-        <span class="material-symbols-outlined text-[28px]">shopping_cart</span>
-        <span class="absolute -top-1 -right-1 size-6 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-white">2</span>
+    <button
+        class="w-14 h-14 rounded-full bg-coastal text-black shadow-lg shadow-coastal/20 flex items-center justify-center hover:bg-coastal-dark transition-colors duration-200"
+        aria-label="Ver carrinho"
+    >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+        </svg>
     </button>
 </div>
 @endsection
