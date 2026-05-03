@@ -1,7 +1,8 @@
 <header x-data="{ mobileOpen: false }" class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-surface-border">
     <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-5">
-        <a href="/" class="font-serif text-2xl tracking-wide text-vanilla">
-            Laura <span class="text-coastal italic">&</span> Victor
+        <a href="/" class="flex items-center gap-3 font-serif text-2xl tracking-wide text-vanilla">
+            <x-logo-icon class="size-8 text-coastal shrink-0"/>
+            <span>Laura <span class="text-coastal italic">&</span> Victor</span>
         </a>
         <nav class="hidden md:flex items-center gap-10">
             <a class="text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/">Inicio</a>
