@@ -1,51 +1,58 @@
-app = "wedding-list"
-primary_region = "gru"
+# fly.toml app configuration file generated for wedding-list-noble-tree-9371 on 2026-05-03T12:13:03-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'wedding-list-noble-tree-9371'
+primary_region = 'gru'
+console_command = 'php /var/www/html/artisan tinker'
 
 [build]
+  [build.args]
+    NODE_VERSION = '18'
+    PHP_VERSION = '8.2'
 
 [env]
-  APP_ENV = "production"
-  APP_DEBUG = "false"
-  APP_URL = "https://wedding.vasapolin.com"
-  APP_LOCALE = "pt_BR"
-  APP_FALLBACK_LOCALE = "en"
-  LOG_CHANNEL = "stderr"
-  LOG_LEVEL = "info"
-  DB_CONNECTION = "sqlite"
-  DB_DATABASE = "/data/database.sqlite"
-  SESSION_DRIVER = "database"
-  CACHE_STORE = "database"
-  QUEUE_CONNECTION = "sync"
-  PHP_OPCACHE_ENABLE = "1"
-  SSL_MODE = "off"
-
-[deploy]
-  release_command = "sh -c 'mkdir -p /data && touch /data/database.sqlite && php artisan migrate --force'"
+  APP_DEBUG = 'false'
+  APP_ENV = 'production'
+  APP_FALLBACK_LOCALE = 'en'
+  APP_LOCALE = 'pt_BR'
+  APP_URL = 'https://wedding.vasapolin.com'
+  CACHE_STORE = 'database'
+  DB_CONNECTION = 'sqlite'
+  DB_DATABASE = '/data/database.sqlite'
+  LOG_CHANNEL = 'stderr'
+  LOG_LEVEL = 'info'
+  LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
+  PHP_OPCACHE_ENABLE = '1'
+  QUEUE_CONNECTION = 'sync'
+  SESSION_DRIVER = 'cookie'
+  SESSION_SECURE_COOKIE = 'true'
 
 [[mounts]]
-  source = "wedding_data"
-  destination = "/data"
+  source = 'wedding_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
   [http_service.concurrency]
-    type = "requests"
+    type = 'requests'
     hard_limit = 50
     soft_limit = 25
 
   [[http_service.checks]]
-    interval = "30s"
-    timeout = "5s"
-    grace_period = "10s"
-    method = "GET"
-    path = "/up"
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/up'
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = 'shared-cpu-1x'
+  memory = '256mb'

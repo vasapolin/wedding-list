@@ -21,22 +21,27 @@ COPY resources ./resources
 COPY public ./public
 RUN npm run build
 
-# ---------- Stage 3: Runtime ----------
-FROM serversideup/php:8.2-fpm-nginx
+# ---------- Stage 3: Runtime (FrankenPHP) ----------
+FROM dunglas/frankenphp:1-php8.2
 
-USER root
+RUN install-php-extensions pdo_sqlite opcache
 
-WORKDIR /var/www/html
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-COPY --chown=www-data:www-data . /var/www/html
-COPY --chown=www-data:www-data --from=composer-deps /app/vendor /var/www/html/vendor
-COPY --chown=www-data:www-data --from=node-build /app/public/build /var/www/html/public/build
+WORKDIR /app
+
+COPY . /app
+COPY --from=composer-deps /app/vendor /app/vendor
+COPY --from=node-build /app/public/build /app/public/build
 
 RUN composer dump-autoload --optimize --no-dev --classmap-authoritative \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/vendor \
-    && chmod -R ug+rwX /var/www/html/storage /var/www/html/bootstrap/cache
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-COPY docker/entrypoint.d/10-laravel.sh /etc/entrypoint.d/10-laravel.sh
-RUN chmod +x /etc/entrypoint.d/10-laravel.sh
+ENV SERVER_NAME=":8080"
+EXPOSE 8080
 
-USER www-data
+COPY docker/entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
