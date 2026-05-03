@@ -1,0 +1,62 @@
+# VCS
+.git/
+.gitignore
+.gitattributes
+
+# Deps rebuilt in stages
+node_modules/
+vendor/
+
+# Local env (use Fly secrets / fly.toml [env])
+.env
+.env.local
+.env.backup
+.env.production
+
+# Build artifacts (rebuilt)
+public/build/
+public/hot/
+public/storage/
+
+# Runtime storage (volume in production)
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+storage/pail
+!storage/**/.gitignore
+
+# Tests
+tests/
+phpunit.xml
+.phpunit.cache/
+.phpunit.result.cache
+
+# IDE / tooling
+.idea/
+.vscode/
+.zed/
+.fleet/
+.nova/
+.phpactor.json
+
+# Project docs / agent meta
+*.md
+.claude/
+.codex/
+.gemini/
+.agents/
+.mcp.json
+boost.json
+opencode.json
+task.md
+Convite/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+auth.json
+docker-compose*.yml

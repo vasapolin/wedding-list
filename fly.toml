@@ -1,0 +1,51 @@
+app = "wedding-list"
+primary_region = "gru"
+
+[build]
+
+[env]
+  APP_ENV = "production"
+  APP_DEBUG = "false"
+  APP_URL = "https://wedding.vasapolin.com"
+  APP_LOCALE = "pt_BR"
+  APP_FALLBACK_LOCALE = "en"
+  LOG_CHANNEL = "stderr"
+  LOG_LEVEL = "info"
+  DB_CONNECTION = "sqlite"
+  DB_DATABASE = "/data/database.sqlite"
+  SESSION_DRIVER = "database"
+  CACHE_STORE = "database"
+  QUEUE_CONNECTION = "sync"
+  PHP_OPCACHE_ENABLE = "1"
+  SSL_MODE = "off"
+
+[deploy]
+  release_command = "sh -c 'mkdir -p /data && touch /data/database.sqlite && php artisan migrate --force'"
+
+[[mounts]]
+  source = "wedding_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 50
+    soft_limit = 25
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/up"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
