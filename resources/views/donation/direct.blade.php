@@ -100,6 +100,21 @@
                 @error('donor_email')<p class="font-sans text-xs text-red-400 mt-1">{{ $message }}</p>@enderror
             </div>
 
+            {{-- CPF (exigido pelo Asaas) --}}
+            <div class="mb-6">
+                <label class="block font-sans text-xs uppercase tracking-widest text-ink-muted mb-3">CPF</label>
+                <input
+                    name="donor_document"
+                    type="text"
+                    required
+                    inputmode="numeric"
+                    value="{{ old('donor_document') }}"
+                    placeholder="000.000.000-00"
+                    class="w-full h-12 px-4 border border-surface-border focus:border-coastal bg-surface-light font-sans text-sm text-ink outline-none transition-colors duration-200 placeholder:text-ink-muted"
+                />
+                @error('donor_document')<p class="font-sans text-xs text-red-400 mt-1">{{ $message }}</p>@enderror
+            </div>
+
             {{-- Anonymous Toggle --}}
             <div class="flex items-center gap-3 mb-6">
                 <input

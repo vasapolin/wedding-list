@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\SiteAsset;
+use App\Rules\CpfOuCnpj;
 use App\Services\AsaasClient;
 use App\Services\Cart;
 use Illuminate\Contracts\View\View;
@@ -34,6 +35,7 @@ class DonationController extends Controller
         $rules = [
             'donor_name' => ['nullable', 'string', 'max:120'],
             'donor_email' => ['required', 'email', 'max:191'],
+            'donor_document' => ['required', 'string', new CpfOuCnpj],
             'message' => ['nullable', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],
             'payment_method' => ['required', 'in:pix,credit_card'],
@@ -58,6 +60,7 @@ class DonationController extends Controller
             'gift_id' => $useCart ? null : ($data['gift_id'] ?? null),
             'donor_name' => $data['donor_name'] ?? null,
             'donor_email' => $data['donor_email'],
+            'donor_document' => preg_replace('/\D/', '', $data['donor_document']),
             'amount_cents' => $amountCents,
             'message' => $data['message'] ?? null,
             'is_anonymous' => (bool) ($data['is_anonymous'] ?? false),

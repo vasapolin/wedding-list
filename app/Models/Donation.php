@@ -23,6 +23,7 @@ class Donation extends Model
         'gift_id',
         'donor_name',
         'donor_email',
+        'donor_document',
         'amount_cents',
         'message',
         'is_anonymous',

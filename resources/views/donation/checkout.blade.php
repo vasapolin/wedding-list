@@ -72,6 +72,19 @@
                             </div>
                         </div>
                         <div>
+                            <label class="block font-sans text-xs uppercase tracking-widest text-ink-muted mb-3">CPF <span class="normal-case italic tracking-normal text-ink-muted ml-1">(exigido pelo processador de pagamento)</span></label>
+                            <input
+                                name="donor_document"
+                                type="text"
+                                required
+                                inputmode="numeric"
+                                value="{{ old('donor_document') }}"
+                                class="w-full h-12 px-4 border border-surface-border focus:border-coastal bg-surface-light font-sans text-sm text-ink outline-none transition-colors duration-200 placeholder:text-ink-muted"
+                                placeholder="000.000.000-00"
+                            />
+                            @error('donor_document')<p class="font-sans text-xs text-red-400 mt-1">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
                             <label class="block font-sans text-xs uppercase tracking-widest text-ink-muted mb-3">
                                 Mensagem para o casal
                                 <span class="normal-case italic tracking-normal text-ink-muted ml-1">(opcional)</span>

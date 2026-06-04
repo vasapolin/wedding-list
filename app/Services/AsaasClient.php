@@ -117,14 +117,18 @@ class AsaasClient
 
         $email = $donation->donor_email ?: 'doador-'.$donation->id.'@example.com';
 
-        $existing = $this->client()->get('/customers', ['email' => $email])->throw()->json();
+        $existing = $this->client()->get('/customers', array_filter([
+            'email' => $email,
+            'cpfCnpj' => $donation->donor_document,
+        ]))->throw()->json();
         $customerId = $existing['data'][0]['id'] ?? null;
 
         if (! $customerId) {
-            $customer = $this->client()->post('/customers', [
+            $customer = $this->client()->post('/customers', array_filter([
                 'name' => $donation->donor_name ?: 'Doador anônimo',
                 'email' => $email,
-            ])->throw()->json();
+                'cpfCnpj' => $donation->donor_document,
+            ]))->throw()->json();
             $customerId = $customer['id'];
         }
 

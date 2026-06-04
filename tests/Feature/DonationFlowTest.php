@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Donation;
 use App\Models\Gift;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DonationFlowTest extends TestCase
@@ -17,6 +18,7 @@ class DonationFlowTest extends TestCase
             'amount' => 150,
             'donor_name' => 'Tio Carlos',
             'donor_email' => 'tio@example.com',
+            'donor_document' => '529.982.247-25',
             'message' => 'Felicidades!',
             'payment_method' => 'pix',
         ]);
@@ -40,11 +42,85 @@ class DonationFlowTest extends TestCase
         $this->post('/checkout', [
             'use_cart' => '1',
             'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
             'payment_method' => 'pix',
         ]);
 
         $donation = Donation::query()->latest()->first();
         $this->assertSame(25_000, $donation->amount_cents);
+    }
+
+    public function test_donation_without_document_is_rejected(): void
+    {
+        $response = $this->post('/checkout', [
+            'amount' => 100,
+            'donor_email' => 'tio@example.com',
+            'payment_method' => 'pix',
+        ]);
+
+        $response->assertSessionHasErrors('donor_document');
+        $this->assertSame(0, Donation::query()->count());
+    }
+
+    public function test_donation_with_invalid_document_is_rejected(): void
+    {
+        $response = $this->post('/checkout', [
+            'amount' => 100,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '111.111.111-11',
+            'payment_method' => 'pix',
+        ]);
+
+        $response->assertSessionHasErrors('donor_document');
+        $this->assertSame(0, Donation::query()->count());
+    }
+
+    public function test_donor_document_is_stored_with_digits_only(): void
+    {
+        $this->post('/checkout', [
+            'amount' => 100,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '529.982.247-25',
+            'payment_method' => 'pix',
+        ]);
+
+        $donation = Donation::query()->latest()->first();
+        $this->assertSame('52998224725', $donation->donor_document);
+    }
+
+    public function test_asaas_customer_is_created_with_cpf_cnpj(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/customers*' => Http::sequence()
+                ->push(['data' => []])
+                ->push(['id' => 'cus_1']),
+            'api-sandbox.asaas.com/v3/payments' => Http::response([
+                'id' => 'pay_1',
+                'status' => 'PENDING',
+                'invoiceUrl' => 'https://sandbox.asaas.com/i/pay_1',
+            ]),
+            'api-sandbox.asaas.com/v3/payments/pay_1/pixQrCode' => Http::response([
+                'payload' => 'pix-copy-paste',
+                'encodedImage' => base64_encode('img'),
+                'expirationDate' => now()->addDay()->toDateTimeString(),
+            ]),
+        ]);
+
+        $this->post('/checkout', [
+            'amount' => 100,
+            'donor_name' => 'Tio Carlos',
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '529.982.247-25',
+            'payment_method' => 'pix',
+        ]);
+
+        Http::assertSent(function ($request) {
+            return $request->method() === 'POST'
+                && str_ends_with($request->url(), '/customers')
+                && $request['cpfCnpj'] === '52998224725';
+        });
     }
 
     public function test_webhook_marks_donation_as_paid_and_increments_gift_raised(): void
