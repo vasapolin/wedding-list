@@ -41,11 +41,13 @@ class DonationController extends Controller
         ];
 
         if (! $useCart) {
-            $rules['amount'] = ['required', 'numeric', 'min:1'];
+            $rules['amount'] = ['required', 'numeric', 'min:5'];
             $rules['gift_id'] = ['nullable', 'exists:gifts,id'];
         }
 
-        $data = Validator::make($request->all(), $rules)->validate();
+        $data = Validator::make($request->all(), $rules, [
+            'amount.min' => 'O valor mínimo para doação é R$ 5,00 (exigência do processador de pagamento).',
+        ])->validate();
 
         $amountCents = $useCart
             ? $cart->totalCents()

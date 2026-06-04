@@ -50,6 +50,19 @@ class DonationFlowTest extends TestCase
         $this->assertSame(25_000, $donation->amount_cents);
     }
 
+    public function test_donation_below_asaas_minimum_is_rejected(): void
+    {
+        $response = $this->post('/checkout', [
+            'amount' => 3,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
+            'payment_method' => 'pix',
+        ]);
+
+        $response->assertSessionHasErrors('amount');
+        $this->assertSame(0, Donation::query()->count());
+    }
+
     public function test_donation_without_document_is_rejected(): void
     {
         $response = $this->post('/checkout', [
