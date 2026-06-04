@@ -42,6 +42,12 @@ class Gift extends Model
                 $gift->slug = static::makeUniqueSlug($gift->name, $gift->id);
             }
         });
+
+        static::deleting(function (Gift $gift): bool {
+            return ! $gift->donations()
+                ->where('status', Donation::STATUS_PAID)
+                ->exists();
+        });
     }
 
     protected static function makeUniqueSlug(string $name, ?int $ignoreId = null): string

@@ -13,6 +13,8 @@ class CartController extends Controller
 
     public function add(Gift $gift, Request $request): RedirectResponse
     {
+        abort_unless($gift->is_active, 404);
+
         $cart = $this->cart();
         $cart[$gift->id] = ($cart[$gift->id] ?? 0) + 1;
         Session::put(self::SESSION_KEY, $cart);

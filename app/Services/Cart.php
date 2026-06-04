@@ -19,7 +19,11 @@ class Cart
             return collect();
         }
 
-        $gifts = Gift::query()->whereIn('id', array_keys($cart))->get()->keyBy('id');
+        $gifts = Gift::query()
+            ->whereIn('id', array_keys($cart))
+            ->where('is_active', true)
+            ->get()
+            ->keyBy('id');
 
         return collect($cart)
             ->filter(fn ($qty, $id) => isset($gifts[$id]))
@@ -38,7 +42,7 @@ class Cart
 
     public function count(): int
     {
-        return (int) collect(Session::get(CartController::SESSION_KEY, []))->sum();
+        return (int) $this->items()->sum('quantity');
     }
 
     public function isEmpty(): bool

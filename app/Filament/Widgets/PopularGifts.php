@@ -32,7 +32,7 @@ class PopularGifts extends TableWidget
                 TextColumn::make('progress')
                     ->label('Progresso')
                     ->state(fn (Gift $record): string => $record->price_cents > 0
-                        ? min(100, (int) round($record->raised_cents / $record->price_cents * 100)).'%'
+                        ? $record->progress_percentage.'%'
                         : '—'),
             ]);
     }
