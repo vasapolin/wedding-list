@@ -8,9 +8,10 @@ fi
 chown -R www-data:www-data /data
 chmod 664 /data/database.sqlite
 
-# Persistent uploads (gift photos, site assets) live on the Fly volume so they
-# survive deploys. Symlink storage/app/public -> /data/uploads, then have
-# public/storage point to that via the standard storage:link target.
+# Persistent uploads (gift photos, site assets) live on the persistent volume
+# mounted at /data so they survive deploys. Symlink storage/app/public ->
+# /data/uploads, then have public/storage point to that via the standard
+# storage:link target.
 mkdir -p /data/uploads
 chown -R www-data:www-data /data/uploads
 

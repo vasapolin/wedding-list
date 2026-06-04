@@ -248,52 +248,61 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ## Deployment
 
-This app targets **Fly.io**. Deploys are **manual** (`fly deploy`) — the GitHub Actions auto-deploy workflow was removed on purpose; do not re-add it without asking.
+This app targets **Coolify** (self-hosted PaaS, Docker-based). The GitHub Actions auto-deploy workflow was removed on purpose; do not re-add it without asking. The previous Fly.io setup was abandoned (2026-06-04).
 
 ### Production
 
-- **Public URL**: https://wedding.vasapolin.com (custom domain, Let's Encrypt SSL)
-- **Fly hostname**: https://wedding-list-noble-tree-9371.fly.dev
-- **Fly app name**: `wedding-list-noble-tree-9371` (region `gru` / São Paulo)
-- **Runtime**: FrankenPHP (`dunglas/frankenphp:1-php8.2`) — single-binary, Caddy + PHP, no nginx/fpm/s6
-- **Database**: SQLite on a 1GB Fly volume mounted at `/data`, file at `/data/database.sqlite`
+- **Public URL**: https://wedding.vasapolin.com (custom domain; SSL via Coolify's Traefik + Let's Encrypt)
+- **Runtime**: FrankenPHP (`dunglas/frankenphp:1-php8.2`) — single-binary, Caddy + PHP, no nginx/fpm/s6. Listens on port **8080**.
+- **Database**: SQLite on a Coolify persistent volume mounted at `/data`, file at `/data/database.sqlite`
 - **Sessions / cache**: cookie-based (no DB session table needed for sessions); cache uses `database` driver
+
+### Coolify setup (when creating the resource)
+
+- Build pack: **Dockerfile** (repo root `Dockerfile`).
+- Persistent Storage: add a volume mounted at **`/data`** (holds SQLite DB + uploads). Without it, data is wiped on every deploy.
+- Port: expose **8080** (`SERVER_NAME=:8080` is baked into the image).
+- Healthcheck: `GET /up` on port 8080.
+- Replicas: keep at **1** — SQLite + single volume cannot serve multiple containers.
+- Environment variables (set in the Coolify UI; the old `fly.toml` `[env]` block carried these):
+
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=<secret>
+APP_URL=https://wedding.vasapolin.com
+APP_LOCALE=pt_BR
+APP_FALLBACK_LOCALE=en
+DB_CONNECTION=sqlite
+DB_DATABASE=/data/database.sqlite
+CACHE_STORE=database
+SESSION_DRIVER=cookie
+SESSION_SECURE_COOKIE=true
+QUEUE_CONNECTION=sync
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+ASAAS_API_KEY=<secret>
+ASAAS_WEBHOOK_TOKEN=<secret>
+ASAAS_ENV=production
+```
 
 ### Key deployment files
 
 - `Dockerfile` — 3-stage build (composer deps → vite build → FrankenPHP runtime). Composer binary copied from the `composer:2` image into the runtime stage so `dump-autoload` works post-build.
-- `docker/entrypoint.sh` — runs at every machine boot, ordered: ensure `/data/database.sqlite` exists and is `www-data`-owned → `php artisan migrate --force` → cache config/routes/views → `exec` into FrankenPHP. Migrations run here (not in `release_command`) because the volume is only mounted on the app machine.
-- `fly.toml` — region, env vars (non-sensitive), volume mount, http_service, healthcheck on `/up`.
-- `bootstrap/app.php` has `trustProxies(at: '*')` — required so Laravel respects Fly's load balancer headers and generates `https://` URLs.
+- `docker/entrypoint.sh` — runs at every container boot, ordered: ensure `/data/database.sqlite` exists and is `www-data`-owned → symlink uploads to `/data/uploads` → `php artisan migrate --force` → cache config/routes/views → `exec` into FrankenPHP.
+- `bootstrap/app.php` has `trustProxies(at: '*')` — required so Laravel respects Traefik's proxy headers and generates `https://` URLs.
 
 ### Env vars / secrets
 
-- Non-sensitive runtime env: defined in `[env]` block of `fly.toml` (versioned).
-- Sensitive secrets: managed via `fly secrets set KEY=value -a wedding-list-noble-tree-9371`. Currently only `APP_KEY` is set as a secret.
-- **Never** commit a `.env` for production — Fly merges `[env]` + secrets into the process environment automatically.
-
-### Operations cheat-sheet
-
-```bash
-# Use the local flyctl install
-export FLYCTL_INSTALL="/home/victor/.fly"
-export PATH="$FLYCTL_INSTALL/bin:$PATH"
-
-fly deploy -a wedding-list-noble-tree-9371                # manual deploy
-fly logs -a wedding-list-noble-tree-9371                  # live logs
-fly ssh console -a wedding-list-noble-tree-9371           # shell on running VM
-fly ssh console -a wedding-list-noble-tree-9371 -C 'php /app/artisan tinker'
-fly ssh sftp get -a wedding-list-noble-tree-9371 /data/database.sqlite ./backup-$(date +%F).sqlite
-fly status -a wedding-list-noble-tree-9371
-fly certs check wedding.vasapolin.com -a wedding-list-noble-tree-9371
-```
+- All runtime env (including secrets) is managed in the **Coolify UI** for the resource.
+- **Never** commit a `.env` for production.
 
 ### Gotchas
 
-- Single VM only — SQLite + Fly volume cannot be used with multiple machines (volume attaches to one VM at a time). Don't scale `min_machines_running` past 1.
-- Cache files written by `php artisan *:cache` at boot live in the container's ephemeral FS, not on the volume — they rebuild every machine restart, which is fine.
+- Single container only — SQLite + a single volume cannot be shared across replicas. Don't scale past 1.
+- Cache files written by `php artisan *:cache` at boot live in the container's ephemeral FS, not on the volume — they rebuild every container restart, which is fine.
 - The `docker/entrypoint.sh` runs as **root** so it can `chown /data`. FrankenPHP itself drops to `www-data` for request handling per the Caddyfile.
-- DNS records on Cloudflare for `wedding` must be **DNS only** (gray cloud), not Proxied — proxying breaks Fly's Let's Encrypt validation flow.
+- If Cloudflare fronts the domain, either use **DNS only** (gray cloud) or, if Proxied, set SSL mode to **Full (strict)** so Traefik's Let's Encrypt HTTP-01 challenge still works (DNS only is the simpler, known-good option).
 
 ### Admin panel (Filament v5)
 
@@ -308,7 +317,7 @@ fly certs check wedding.vasapolin.com -a wedding-list-noble-tree-9371
 - `App\Services\AsaasClient` is a thin wrapper around `Http::baseUrl(...)`. If `ASAAS_API_KEY` is empty, all methods no-op so dev/staging keep working.
 - `createCharge()` handles both Pix (QR code fetched and stored in `asaas_payload`) and credit card (donor is redirected to the Asaas-hosted `invoiceUrl`). Charges send a `callback.successUrl`; if the Asaas account has no registered domain the API rejects it and the client automatically retries without the callback.
 - Donors must provide CPF/CNPJ (`donor_document`, validated by `App\Rules\CpfOuCnpj`, stored digits-only) — Asaas requires `cpfCnpj` on customers.
-- Set `ASAAS_API_KEY` (and `ASAAS_WEBHOOK_TOKEN`) as Fly secrets, plus `ASAAS_ENV=production` when going live (defaults to `sandbox`).
+- Set `ASAAS_API_KEY` (and `ASAAS_WEBHOOK_TOKEN`) as env vars in Coolify, plus `ASAAS_ENV=production` when going live (defaults to `sandbox`).
 - Webhook endpoint: `POST /api/asaas-webhook` (already excluded from CSRF in `bootstrap/app.php`). Configure this URL in the Asaas dashboard. If `ASAAS_WEBHOOK_TOKEN` is set, requests must send the `asaas-access-token` header matching it.
 - The webhook handler increments `gifts.raised_cents` only on first transition to PAID (idempotent) and decrements it when a paid donation is refunded. The donation status page also polls Asaas (`syncStatus`) as a webhook fallback.
 - Tests never hit the network: `phpunit.xml` blanks `ASAAS_API_KEY` and `tests/TestCase.php` calls `Http::preventStrayRequests()`.
