@@ -108,15 +108,24 @@ class DonationController extends Controller
         ]);
     }
 
-    public function status(Donation $donation): RedirectResponse|View
+    public function status(Donation $donation, AsaasClient $asaas): RedirectResponse|View
     {
+        if ($donation->status === Donation::STATUS_PENDING && $donation->asaas_payment_id) {
+            try {
+                $asaas->syncStatus($donation->asaas_payment_id);
+                $donation->refresh();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         if ($donation->status === Donation::STATUS_PAID) {
             return redirect()->route('donation.confirmation', ['donation' => $donation]);
         }
 
         return view('donation.pix', [
             'donation' => $donation,
-            'pix' => app(AsaasClient::class)->getPixData($donation),
+            'pix' => $asaas->getPixData($donation),
         ]);
     }
 

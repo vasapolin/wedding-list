@@ -251,4 +251,140 @@ class DonationFlowTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_webhook_with_valid_token_is_accepted(): void
+    {
+        config()->set('wedding.asaas.webhook_token', 'expected');
+
+        $donation = Donation::factory()->create([
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_tok',
+        ]);
+
+        $this->postJson('/api/asaas-webhook', [
+            'event' => 'PAYMENT_RECEIVED',
+            'payment' => ['id' => 'pay_tok', 'status' => 'RECEIVED'],
+        ], ['asaas-access-token' => 'expected'])->assertOk();
+
+        $this->assertSame(Donation::STATUS_PAID, $donation->fresh()->status);
+    }
+
+    public function test_webhook_is_idempotent_on_duplicate_payment_events(): void
+    {
+        $gift = Gift::factory()->create(['price_cents' => 50_000, 'raised_cents' => 0, 'is_active' => true]);
+
+        $donation = Donation::factory()->create([
+            'gift_id' => $gift->id,
+            'amount_cents' => 10_000,
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_dup',
+        ]);
+
+        $payload = [
+            'event' => 'PAYMENT_RECEIVED',
+            'payment' => ['id' => 'pay_dup', 'status' => 'RECEIVED'],
+        ];
+
+        $this->postJson('/api/asaas-webhook', $payload)->assertOk();
+        $this->postJson('/api/asaas-webhook', $payload)->assertOk();
+
+        $this->assertSame(10_000, $gift->fresh()->raised_cents);
+        $this->assertSame(Donation::STATUS_PAID, $donation->fresh()->status);
+    }
+
+    public function test_webhook_refund_reverts_gift_raised_total(): void
+    {
+        $gift = Gift::factory()->create(['price_cents' => 50_000, 'raised_cents' => 0, 'is_active' => true]);
+
+        $donation = Donation::factory()->create([
+            'gift_id' => $gift->id,
+            'amount_cents' => 10_000,
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_ref',
+        ]);
+
+        $this->postJson('/api/asaas-webhook', [
+            'event' => 'PAYMENT_RECEIVED',
+            'payment' => ['id' => 'pay_ref', 'status' => 'RECEIVED'],
+        ])->assertOk();
+
+        $this->assertSame(10_000, $gift->fresh()->raised_cents);
+
+        $this->postJson('/api/asaas-webhook', [
+            'event' => 'PAYMENT_REFUNDED',
+            'payment' => ['id' => 'pay_ref', 'status' => 'REFUNDED'],
+        ])->assertOk();
+
+        $this->assertSame(0, $gift->fresh()->raised_cents);
+        $this->assertSame(Donation::STATUS_REFUNDED, $donation->fresh()->status);
+    }
+
+    public function test_webhook_without_payment_id_is_ignored(): void
+    {
+        $this->postJson('/api/asaas-webhook', ['event' => 'PING'])->assertOk();
+    }
+
+    public function test_status_check_polls_asaas_and_redirects_when_paid(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        $gift = Gift::factory()->create(['price_cents' => 50_000, 'raised_cents' => 0, 'is_active' => true]);
+
+        $donation = Donation::factory()->create([
+            'gift_id' => $gift->id,
+            'amount_cents' => 10_000,
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_poll',
+        ]);
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/payments/pay_poll' => Http::response([
+                'id' => 'pay_poll',
+                'status' => 'RECEIVED',
+            ]),
+        ]);
+
+        $response = $this->get(route('donation.status', $donation));
+
+        $response->assertRedirect(route('donation.confirmation', ['donation' => $donation]));
+        $this->assertSame(Donation::STATUS_PAID, $donation->fresh()->status);
+        $this->assertSame(10_000, $gift->fresh()->raised_cents);
+    }
+
+    public function test_status_check_keeps_pending_when_asaas_still_pending(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        $donation = Donation::factory()->create([
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_wait',
+        ]);
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/payments/pay_wait' => Http::response([
+                'id' => 'pay_wait',
+                'status' => 'PENDING',
+            ]),
+        ]);
+
+        $this->get(route('donation.status', $donation))->assertOk();
+        $this->assertSame(Donation::STATUS_PENDING, $donation->fresh()->status);
+    }
+
+    public function test_status_check_survives_asaas_outage(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        $donation = Donation::factory()->create([
+            'status' => Donation::STATUS_PENDING,
+            'asaas_payment_id' => 'pay_down',
+        ]);
+
+        Http::fake([
+            'api-sandbox.asaas.com/*' => Http::response('error', 500),
+        ]);
+
+        $this->get(route('donation.status', $donation))->assertOk();
+        $this->assertSame(Donation::STATUS_PENDING, $donation->fresh()->status);
+    }
 }

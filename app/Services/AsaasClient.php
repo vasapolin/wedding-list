@@ -122,6 +122,10 @@ class AsaasClient
         if ($status === Donation::STATUS_PAID && $previousStatus !== Donation::STATUS_PAID && $donation->gift_id) {
             $donation->gift()->increment('raised_cents', $donation->amount_cents);
         }
+
+        if ($status === Donation::STATUS_REFUNDED && $previousStatus === Donation::STATUS_PAID && $donation->gift_id) {
+            $donation->gift()->decrement('raised_cents', $donation->amount_cents);
+        }
     }
 
     protected function ensureCustomer(Donation $donation): string
