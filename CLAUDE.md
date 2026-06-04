@@ -248,7 +248,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ## Deployment
 
-This app is deployed on **Fly.io** with auto-deploy from GitHub Actions.
+This app targets **Fly.io**. Deploys are **manual** (`fly deploy`) — the GitHub Actions auto-deploy workflow was removed on purpose; do not re-add it without asking.
 
 ### Production
 
@@ -265,7 +265,6 @@ This app is deployed on **Fly.io** with auto-deploy from GitHub Actions.
 - `docker/entrypoint.sh` — runs at every machine boot, ordered: ensure `/data/database.sqlite` exists and is `www-data`-owned → `php artisan migrate --force` → cache config/routes/views → `exec` into FrankenPHP. Migrations run here (not in `release_command`) because the volume is only mounted on the app machine.
 - `fly.toml` — region, env vars (non-sensitive), volume mount, http_service, healthcheck on `/up`.
 - `bootstrap/app.php` has `trustProxies(at: '*')` — required so Laravel respects Fly's load balancer headers and generates `https://` URLs.
-- `.github/workflows/fly-deploy.yml` — auto-deploys on push to `main`. Uses repo secret `FLY_API_TOKEN`.
 
 ### Env vars / secrets
 
@@ -307,9 +306,12 @@ fly certs check wedding.vasapolin.com -a wedding-list-noble-tree-9371
 ### Asaas integration
 
 - `App\Services\AsaasClient` is a thin wrapper around `Http::baseUrl(...)`. If `ASAAS_API_KEY` is empty, all methods no-op so dev/staging keep working.
+- `createCharge()` handles both Pix (QR code fetched and stored in `asaas_payload`) and credit card (donor is redirected to the Asaas-hosted `invoiceUrl`). Charges send a `callback.successUrl`; if the Asaas account has no registered domain the API rejects it and the client automatically retries without the callback.
+- Donors must provide CPF/CNPJ (`donor_document`, validated by `App\Rules\CpfOuCnpj`, stored digits-only) — Asaas requires `cpfCnpj` on customers.
 - Set `ASAAS_API_KEY` (and `ASAAS_WEBHOOK_TOKEN`) as Fly secrets, plus `ASAAS_ENV=production` when going live (defaults to `sandbox`).
 - Webhook endpoint: `POST /api/asaas-webhook` (already excluded from CSRF in `bootstrap/app.php`). Configure this URL in the Asaas dashboard. If `ASAAS_WEBHOOK_TOKEN` is set, requests must send the `asaas-access-token` header matching it.
-- The webhook handler increments `gifts.raised_cents` only on first transition to PAID, so retries are idempotent.
+- The webhook handler increments `gifts.raised_cents` only on first transition to PAID (idempotent) and decrements it when a paid donation is refunded. The donation status page also polls Asaas (`syncStatus`) as a webhook fallback.
+- Tests never hit the network: `phpunit.xml` blanks `ASAAS_API_KEY` and `tests/TestCase.php` calls `Http::preventStrayRequests()`.
 
 ### Domain model
 
