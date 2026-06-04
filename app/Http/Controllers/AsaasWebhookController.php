@@ -23,11 +23,40 @@ class AsaasWebhookController extends Controller
             return response()->json(['ok' => true]);
         }
 
-        $donation = Donation::query()->where('asaas_payment_id', $asaasId)->first();
+        $donation = Donation::query()->where('asaas_payment_id', $asaasId)->first()
+            ?? $this->findByExternalReference($charge);
+
         if ($donation) {
-            $asaas->applyChargeStatus($donation, $charge);
+            if (! $donation->asaas_payment_id) {
+                $donation->update(['asaas_payment_id' => $asaasId]);
+            }
+
+            if ($asaas->isEnabled()) {
+                $asaas->syncStatus($asaasId);
+            } else {
+                $asaas->applyChargeStatus($donation, $charge);
+            }
         }
 
         return response()->json(['ok' => true]);
+    }
+
+    /**
+     * Charges are created with externalReference "donation-{id}", so a
+     * webhook can still be matched when the charge was created in Asaas but
+     * the payment id was never persisted locally (e.g. a timeout after the
+     * POST, or the webhook racing the redirect).
+     */
+    protected function findByExternalReference(array $charge): ?Donation
+    {
+        $reference = (string) ($charge['externalReference'] ?? '');
+
+        if (! preg_match('/^donation-(\d+)$/', $reference, $matches)) {
+            return null;
+        }
+
+        return Donation::query()
+            ->whereNull('asaas_payment_id')
+            ->find((int) $matches[1]);
     }
 }

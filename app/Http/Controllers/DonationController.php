@@ -29,7 +29,6 @@ class DonationController extends Controller
 
     public function store(Request $request, Cart $cart, AsaasClient $asaas): RedirectResponse
     {
-        $isDirect = $request->routeIs('donation.store') && ! $request->filled('use_cart');
         $useCart = $request->boolean('use_cart');
 
         $rules = [
@@ -94,6 +93,15 @@ class DonationController extends Controller
             } catch (\Throwable $e) {
                 report($e);
             }
+        } elseif ($donation->payment_method === 'pix'
+            && $donation->asaas_payment_id
+            && empty($donation->asaas_payload['qr'])) {
+            try {
+                $asaas->fetchPixQrCode($donation);
+                $donation->refresh();
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         if ($donation->payment_method === 'credit_card'
@@ -110,6 +118,15 @@ class DonationController extends Controller
 
     public function status(Donation $donation, AsaasClient $asaas): RedirectResponse|View
     {
+        if ($donation->status === Donation::STATUS_PENDING && ! $donation->asaas_payment_id) {
+            try {
+                $asaas->createCharge($donation);
+                $donation->refresh();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         if ($donation->status === Donation::STATUS_PENDING && $donation->asaas_payment_id) {
             try {
                 $asaas->syncStatus($donation->asaas_payment_id);

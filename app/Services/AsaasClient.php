@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Donation;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class AsaasClient
@@ -57,18 +58,38 @@ class AsaasClient
 
         $charge = $response->throw()->json();
 
-        $payload = ['charge' => $charge];
-
-        if (! $isCreditCard) {
-            $payload['qr'] = $this->client()
-                ->get("/payments/{$charge['id']}/pixQrCode")
-                ->throw()
-                ->json();
-        }
-
         $donation->update([
             'asaas_payment_id' => $charge['id'],
-            'asaas_payload' => array_merge($donation->asaas_payload ?? [], $payload),
+            'asaas_payload' => array_merge($donation->asaas_payload ?? [], ['charge' => $charge]),
+        ]);
+
+        if (! $isCreditCard) {
+            try {
+                $this->fetchPixQrCode($donation);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+    }
+
+    /**
+     * Fetch (or re-fetch) the Pix QR Code for an already-created charge.
+     * Kept separate from charge creation so a transient failure here never
+     * loses the asaas_payment_id of a charge that already exists in Asaas.
+     */
+    public function fetchPixQrCode(Donation $donation): void
+    {
+        if (! $this->isEnabled() || ! $donation->asaas_payment_id) {
+            return;
+        }
+
+        $qr = $this->client()
+            ->get("/payments/{$donation->asaas_payment_id}/pixQrCode")
+            ->throw()
+            ->json();
+
+        $donation->update([
+            'asaas_payload' => array_merge($donation->asaas_payload ?? [], ['qr' => $qr]),
         ]);
     }
 
@@ -108,8 +129,13 @@ class AsaasClient
             return;
         }
 
-        $charge = $this->client()->get("/payments/{$asaasPaymentId}")->throw()->json();
-        $this->applyChargeStatus($donation, $charge);
+        $response = $this->client()->get("/payments/{$asaasPaymentId}");
+
+        if ($response->status() === 404) {
+            return;
+        }
+
+        $this->applyChargeStatus($donation, $response->throw()->json());
     }
 
     public function applyChargeStatus(Donation $donation, array $charge): void
@@ -121,21 +147,35 @@ class AsaasClient
             default => Donation::STATUS_PENDING,
         };
 
-        $previousStatus = $donation->status;
+        DB::transaction(function () use ($donation, $charge, $status): void {
+            $locked = Donation::query()->whereKey($donation->getKey())->lockForUpdate()->first();
 
-        $donation->update([
-            'status' => $status,
-            'paid_at' => $status === Donation::STATUS_PAID && ! $donation->paid_at ? now() : $donation->paid_at,
-            'asaas_payload' => array_merge($donation->asaas_payload ?? [], ['last_charge' => $charge]),
-        ]);
+            if (! $locked) {
+                return;
+            }
 
-        if ($status === Donation::STATUS_PAID && $previousStatus !== Donation::STATUS_PAID && $donation->gift_id) {
-            $donation->gift()->increment('raised_cents', $donation->amount_cents);
-        }
+            $previousStatus = $locked->status;
 
-        if ($status === Donation::STATUS_REFUNDED && $previousStatus === Donation::STATUS_PAID && $donation->gift_id) {
-            $donation->gift()->decrement('raised_cents', $donation->amount_cents);
-        }
+            if ($previousStatus === Donation::STATUS_PAID && $status === Donation::STATUS_PENDING) {
+                return;
+            }
+
+            $locked->update([
+                'status' => $status,
+                'paid_at' => $status === Donation::STATUS_PAID && ! $locked->paid_at ? now() : $locked->paid_at,
+                'asaas_payload' => array_merge($locked->asaas_payload ?? [], ['last_charge' => $charge]),
+            ]);
+
+            if ($status === Donation::STATUS_PAID && $previousStatus !== Donation::STATUS_PAID && $locked->gift_id) {
+                $locked->gift()->increment('raised_cents', $locked->amount_cents);
+            }
+
+            if ($status === Donation::STATUS_REFUNDED && $previousStatus === Donation::STATUS_PAID && $locked->gift_id) {
+                $locked->gift()->decrement('raised_cents', $locked->amount_cents);
+            }
+        });
+
+        $donation->refresh();
     }
 
     protected function ensureCustomer(Donation $donation): string
