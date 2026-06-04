@@ -12,7 +12,7 @@
     {{-- Background image --}}
     <div
         class="absolute inset-0 bg-center bg-cover"
-        style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80')"
+        style="background-image: url('{{ $heroUrl ?? 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80' }}')"
     ></div>
 
     {{-- Dark overlay --}}
@@ -165,27 +165,20 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-surface-border">
-            <x-gift-card
-                name="Jogo de Panelas"
-                price="680,00"
-                image="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80"
-                :percentage="75"
-                amountRaised="510,00"
-            />
-            <x-gift-card
-                name="Maquina de Cafe"
-                price="1.200,00"
-                image="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80"
-                :percentage="40"
-                amountRaised="480,00"
-            />
-            <x-gift-card
-                name="Enxoval de Cama"
-                price="450,00"
-                image="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80"
-                :percentage="90"
-                amountRaised="405,00"
-            />
+            @foreach($featuredGifts ?? [] as $gift)
+                @php
+                    $imageUrl = $gift->image_path
+                        ? \Illuminate\Support\Facades\Storage::disk('public')->url($gift->image_path)
+                        : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80';
+                @endphp
+                <x-gift-card
+                    :name="$gift->name"
+                    :price="number_format($gift->price_cents / 100, 2, ',', '.')"
+                    :image="$imageUrl"
+                    :percentage="$gift->progress_percentage"
+                    :amountRaised="number_format($gift->raised_cents / 100, 2, ',', '.')"
+                />
+            @endforeach
         </div>
 
         <div class="mt-12 text-center md:hidden">
@@ -215,10 +208,12 @@
         {{-- Masonry-like grid --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
 
+            @php($galleryUrls = $galleryUrls ?? [])
+
             {{-- Tall left image: spans 2 rows on md --}}
             <div class="relative col-span-1 md:row-span-2 overflow-hidden aspect-[3/4] md:aspect-auto">
                 <img
-                    src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80"
+                    src="{{ $galleryUrls[0] ?? 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80' }}"
                     alt="Aliancas de casamento"
                     class="absolute inset-0 w-full h-full object-cover"
                     loading="lazy"
@@ -228,7 +223,7 @@
             {{-- Wide top image --}}
             <div class="relative col-span-1 md:col-span-2 overflow-hidden aspect-video">
                 <img
-                    src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80"
+                    src="{{ $galleryUrls[1] ?? 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80' }}"
                     alt="Local do casamento"
                     class="absolute inset-0 w-full h-full object-cover"
                     loading="lazy"
@@ -238,7 +233,7 @@
             {{-- Small top-right image --}}
             <div class="relative col-span-1 overflow-hidden aspect-square">
                 <img
-                    src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80"
+                    src="{{ $galleryUrls[2] ?? 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80' }}"
                     alt="Casal"
                     class="absolute inset-0 w-full h-full object-cover"
                     loading="lazy"
@@ -248,7 +243,7 @@
             {{-- Wide bottom image --}}
             <div class="relative col-span-2 md:col-span-3 overflow-hidden aspect-video">
                 <img
-                    src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80"
+                    src="{{ $galleryUrls[3] ?? 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80' }}"
                     alt="Detalhes do casamento"
                     class="absolute inset-0 w-full h-full object-cover"
                     loading="lazy"
@@ -276,31 +271,23 @@
                 </p>
             </div>
 
-            <form class="flex flex-col gap-6">
+            <form class="flex flex-col gap-6" method="POST" action="{{ route('messages.store') }}">
+                @csrf
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div class="flex flex-col gap-2">
-                        <label for="contact-name" class="font-sans text-[10px] tracking-[0.25em] uppercase text-ink-muted">
-                            Nome
-                        </label>
-                        <input
-                            id="contact-name"
-                            type="text"
-                            placeholder="Seu nome"
-                            class="font-sans text-sm text-vanilla bg-transparent border border-surface-border px-4 py-3 focus:outline-none focus:border-coastal transition-colors placeholder:text-ink-muted/40"
-                        />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="contact-email" class="font-sans text-[10px] tracking-[0.25em] uppercase text-ink-muted">
-                            E-mail
-                        </label>
-                        <input
-                            id="contact-email"
-                            type="email"
-                            placeholder="seu@email.com"
-                            class="font-sans text-sm text-vanilla bg-transparent border border-surface-border px-4 py-3 focus:outline-none focus:border-coastal transition-colors placeholder:text-ink-muted/40"
-                        />
-                    </div>
+                <div class="flex flex-col gap-2">
+                    <label for="contact-name" class="font-sans text-[10px] tracking-[0.25em] uppercase text-ink-muted">
+                        Nome
+                    </label>
+                    <input
+                        id="contact-name"
+                        name="author"
+                        type="text"
+                        required
+                        maxlength="80"
+                        placeholder="Seu nome"
+                        value="{{ old('author') }}"
+                        class="font-sans text-sm text-vanilla bg-transparent border border-surface-border px-4 py-3 focus:outline-none focus:border-coastal transition-colors placeholder:text-ink-muted/40"
+                    />
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -309,19 +296,28 @@
                     </label>
                     <textarea
                         id="contact-message"
+                        name="body"
                         rows="5"
+                        required
+                        maxlength="2000"
                         placeholder="Escreva sua mensagem..."
                         class="font-sans text-sm text-vanilla bg-transparent border border-surface-border px-4 py-3 focus:outline-none focus:border-coastal transition-colors resize-none placeholder:text-ink-muted/40"
-                    ></textarea>
+                    >{{ old('body') }}</textarea>
                 </div>
 
-                <div class="pt-1">
+                @error('author')<p class="font-sans text-xs text-red-400">{{ $message }}</p>@enderror
+                @error('body')<p class="font-sans text-xs text-red-400">{{ $message }}</p>@enderror
+
+                <div class="pt-1 flex flex-col sm:flex-row sm:items-center gap-4">
                     <button
                         type="submit"
                         class="font-sans text-xs tracking-[0.25em] uppercase px-10 py-4 bg-coastal text-black hover:bg-coastal-dark transition-all duration-300 w-full sm:w-auto"
                     >
-                        Enviar Mensagem
+                        Publicar no mural
                     </button>
+                    <p class="font-sans text-xs text-ink-muted">
+                        Sua mensagem aparecerá no <a href="{{ route('messages.index') }}" class="text-coastal hover:text-coastal-dark underline underline-offset-2">mural de mensagens</a>.
+                    </p>
                 </div>
 
             </form>

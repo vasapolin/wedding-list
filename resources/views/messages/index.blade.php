@@ -12,7 +12,7 @@
     {{-- Background image --}}
     <div
         class="absolute inset-0 bg-center bg-cover"
-        style="background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80')"
+        style="background-image: url('{{ $heroUrl ?? 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80' }}')"
     ></div>
 
     {{-- Dark overlay --}}
@@ -52,7 +52,14 @@
                     <h2 class="font-serif text-2xl text-vanilla">Escreva ao Casal</h2>
                 </div>
 
-                <form class="flex flex-col gap-5">
+                @if(session('message.posted'))
+                    <div class="border border-coastal/50 bg-coastal/5 px-4 py-3 font-sans text-xs text-coastal">
+                        Sua mensagem foi publicada. Obrigado pelo carinho!
+                    </div>
+                @endif
+
+                <form class="flex flex-col gap-5" method="POST" action="{{ route('messages.store') }}">
+                    @csrf
 
                     <div class="flex flex-col gap-2">
                         <label
@@ -63,10 +70,15 @@
                         </label>
                         <input
                             id="msg-name"
+                            name="author"
                             type="text"
+                            required
+                            maxlength="80"
+                            value="{{ old('author') }}"
                             placeholder="Como deseja ser identificado?"
                             class="w-full bg-surface-light border border-surface-border px-4 py-3 font-sans text-sm text-vanilla placeholder:text-ink-muted/50 focus:outline-none focus:border-coastal transition-colors"
                         />
+                        @error('author')<p class="font-sans text-xs text-red-400">{{ $message }}</p>@enderror
                     </div>
 
                     <div class="flex flex-col gap-2">
@@ -78,10 +90,14 @@
                         </label>
                         <textarea
                             id="msg-text"
+                            name="body"
                             rows="5"
+                            required
+                            maxlength="2000"
                             placeholder="Escreva algo carinhoso para Laura & Victor..."
                             class="w-full bg-surface-light border border-surface-border px-4 py-3 font-sans text-sm text-vanilla placeholder:text-ink-muted/50 focus:outline-none focus:border-coastal transition-colors resize-none"
-                        ></textarea>
+                        >{{ old('body') }}</textarea>
+                        @error('body')<p class="font-sans text-xs text-red-400">{{ $message }}</p>@enderror
                     </div>
 
                     <button
@@ -105,18 +121,18 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-3">
-                    @foreach(['R$50', 'R$100', 'R$250'] as $amount)
-                    <button
-                        type="button"
-                        class="bg-surface border border-surface-border hover:border-coastal font-sans text-sm font-semibold text-vanilla py-3 transition-colors duration-200"
-                    >
-                        {{ $amount }}
-                    </button>
+                    @foreach([50, 100, 250] as $amount)
+                        <a
+                            href="{{ route('donation.direct') }}?amount={{ $amount }}"
+                            class="bg-surface border border-surface-border hover:border-coastal font-sans text-sm font-semibold text-vanilla py-3 transition-colors duration-200 text-center"
+                        >
+                            R${{ $amount }}
+                        </a>
                     @endforeach
                 </div>
 
                 <a
-                    href="/doar/direto"
+                    href="{{ route('donation.direct') }}"
                     class="font-sans text-xs tracking-[0.2em] uppercase text-coastal hover:text-coastal-dark transition-colors text-center"
                 >
                     Valor Personalizado &rarr;
@@ -138,90 +154,33 @@
                     <h2 class="font-serif text-3xl md:text-4xl text-vanilla">Mensagens Recentes</h2>
                 </div>
                 <span class="font-sans text-xs text-ink-muted tracking-widest uppercase hidden sm:block">
-                    Ordenar: Recentes
+                    {{ $messages->count() }} {{ $messages->count() === 1 ? 'mensagem' : 'mensagens' }}
                 </span>
             </div>
 
             <div class="flex flex-col gap-4">
 
-                {{-- Card: Maria Mendes --}}
-                <div class="bg-surface border border-surface-border p-6 flex items-start gap-5">
-                    <div class="size-11 shrink-0 rounded-full bg-coastal/20 flex items-center justify-center">
-                        <span class="font-sans text-xs font-bold text-coastal">MM</span>
-                    </div>
-                    <div class="flex-1 min-w-0 flex flex-col gap-3">
-                        <div class="flex items-center justify-between gap-4">
-                            <h4 class="font-serif text-lg text-vanilla">Maria Mendes</h4>
-                            <span class="font-sans text-xs text-ink-muted shrink-0">2 horas atrás</span>
+                @forelse($messages as $message)
+                    <div class="bg-surface border border-surface-border p-6 flex items-start gap-5">
+                        <div class="size-11 shrink-0 rounded-full bg-coastal/20 flex items-center justify-center">
+                            <span class="font-sans text-xs font-bold text-coastal">{{ $message->initials }}</span>
                         </div>
-                        <p class="font-serif text-base text-ink-light italic leading-relaxed">
-                            "Para o casal mais lindo que conheço — que a vida de vocês juntos seja tão radiante quanto o dia do casamento. Desejo infinitos anos de amor, risadas e aventuras compartilhadas."
-                        </p>
-                        <span class="font-sans text-xs text-ink-muted">12 Curtidas</span>
-                    </div>
-                </div>
-
-                {{-- Card: João Pedro --}}
-                <div class="bg-surface border border-surface-border p-6 flex items-start gap-5">
-                    <div class="size-11 shrink-0 rounded-full bg-coastal/20 flex items-center justify-center">
-                        <span class="font-sans text-xs font-bold text-coastal">JP</span>
-                    </div>
-                    <div class="flex-1 min-w-0 flex flex-col gap-3">
-                        <div class="flex items-center justify-between gap-4">
-                            <h4 class="font-serif text-lg text-vanilla">João Pedro</h4>
-                            <span class="font-sans text-xs text-ink-muted shrink-0">5 horas atrás</span>
+                        <div class="flex-1 min-w-0 flex flex-col gap-3">
+                            <div class="flex items-center justify-between gap-4">
+                                <h4 class="font-serif text-lg text-vanilla">{{ $message->author }}</h4>
+                                <span class="font-sans text-xs text-ink-muted shrink-0">{{ $message->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="font-serif text-base text-ink-light italic leading-relaxed whitespace-pre-line">
+                                "{{ $message->body }}"
+                            </p>
                         </div>
-                        <p class="font-serif text-base text-ink-light italic leading-relaxed">
-                            "Que a jornada de vocês seja repleta de cumplicidade e alegria. Estou muito feliz por fazer parte deste momento tão especial!"
-                        </p>
-                        <span class="font-sans text-xs text-ink-muted">7 Curtidas</span>
                     </div>
-                </div>
+                @empty
+                    <div class="bg-surface border border-surface-border p-10 text-center font-sans text-sm text-ink-muted">
+                        Seja a primeira pessoa a deixar uma mensagem para o casal.
+                    </div>
+                @endforelse
 
-                {{-- Card: Família Silva --}}
-                <div class="bg-surface border border-surface-border p-6 flex items-start gap-5">
-                    <div class="size-11 shrink-0 rounded-full bg-coastal/20 flex items-center justify-center">
-                        <span class="font-sans text-xs font-bold text-coastal">FS</span>
-                    </div>
-                    <div class="flex-1 min-w-0 flex flex-col gap-3">
-                        <div class="flex items-center justify-between gap-4">
-                            <h4 class="font-serif text-lg text-vanilla">Família Silva</h4>
-                            <span class="font-sans text-xs text-ink-muted shrink-0">Ontem</span>
-                        </div>
-                        <p class="font-serif text-base text-ink-light italic leading-relaxed">
-                            "Tão felizes por vocês dois. Acompanhamos vocês crescerem juntos e tem sido uma alegria imensa. Lembrem-se sempre de reservar tempo para os encontros a dois!"
-                        </p>
-                        <span class="font-sans text-xs text-ink-muted">8 Curtidas</span>
-                    </div>
-                </div>
-
-                {{-- Card: Camila Oliveira --}}
-                <div class="bg-surface border border-surface-border p-6 flex items-start gap-5">
-                    <div class="size-11 shrink-0 rounded-full bg-coastal/20 flex items-center justify-center">
-                        <span class="font-sans text-xs font-bold text-coastal">CO</span>
-                    </div>
-                    <div class="flex-1 min-w-0 flex flex-col gap-3">
-                        <div class="flex items-center justify-between gap-4">
-                            <h4 class="font-serif text-lg text-vanilla">Camila Oliveira</h4>
-                            <span class="font-sans text-xs text-ink-muted shrink-0">Ontem</span>
-                        </div>
-                        <p class="font-serif text-base text-ink-light italic leading-relaxed">
-                            "Parabéns! Que o lar de vocês seja sempre cheio de alegria, carinho e aconchego."
-                        </p>
-                        <span class="font-sans text-xs text-ink-muted">5 Curtidas</span>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Ver Mais --}}
-            <div class="pt-2 text-center">
-                <button
-                    type="button"
-                    class="font-sans text-xs tracking-[0.25em] uppercase px-9 py-4 border border-surface-border text-ink-light hover:border-coastal hover:text-coastal transition-all duration-300"
-                >
-                    Ver Mais Mensagens
-                </button>
             </div>
 
         </div>
