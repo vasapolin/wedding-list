@@ -63,7 +63,7 @@
                         $imageUrl = $gift->image_url;
                     @endphp
                     <div
-                        class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
+                        class="aspect-[4/3] bg-cover bg-center bg-surface-light transition-transform duration-500 group-hover:scale-[1.02]"
                         style="background-image: url('{{ $imageUrl }}')"
                     ></div>
                     <div class="p-5 flex flex-col flex-1 gap-4">

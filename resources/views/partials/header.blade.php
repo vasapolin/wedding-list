@@ -13,17 +13,17 @@
                 Presentear
             </a>
         </nav>
-        <button @click="mobileOpen = !mobileOpen" class="md:hidden text-vanilla">
+        <button @click="mobileOpen = !mobileOpen" aria-label="Abrir menu" :aria-label="mobileOpen ? 'Fechar menu' : 'Abrir menu'" :aria-expanded="mobileOpen" class="md:hidden text-vanilla p-2 -m-2">
             <svg x-show="!mobileOpen" class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
             <svg x-show="mobileOpen" x-cloak class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
-    <div x-show="mobileOpen" x-cloak x-transition class="md:hidden bg-black border-t border-surface-border px-6 py-6 space-y-5">
-        <a class="block text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/">Inicio</a>
-        <a class="block text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/como-doar">Como Funciona</a>
-        <a class="block text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/presentes">Presentes</a>
-        <a class="block text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/mensagens">Mensagens</a>
-        <a href="/doar" class="block text-center border border-coastal text-coastal hover:bg-coastal hover:text-black px-6 py-3 text-sm font-sans tracking-wide transition-all">
+    <div x-show="mobileOpen" x-cloak x-transition class="md:hidden bg-black border-t border-surface-border px-6 py-4 space-y-1">
+        <a class="block py-2 text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/">Inicio</a>
+        <a class="block py-2 text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/como-doar">Como Funciona</a>
+        <a class="block py-2 text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/presentes">Presentes</a>
+        <a class="block py-2 text-sm font-sans tracking-wide text-ink-light hover:text-coastal transition-colors" href="/mensagens">Mensagens</a>
+        <a href="/doar" class="block text-center border border-coastal text-coastal hover:bg-coastal hover:text-black px-6 py-3 mt-3 text-sm font-sans tracking-wide transition-all">
             Presentear
         </a>
     </div>

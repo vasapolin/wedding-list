@@ -210,7 +210,7 @@
             @php($galleryUrls = $galleryUrls ?? [])
 
             {{-- Tall left image: spans 2 rows on md --}}
-            <div class="relative col-span-1 md:row-span-2 overflow-hidden aspect-[3/4] md:aspect-auto">
+            <div class="relative col-span-1 md:row-span-2 overflow-hidden aspect-[3/4] md:aspect-auto bg-surface-light">
                 <img
                     src="{{ $galleryUrls[0] ?? 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80' }}"
                     alt="Aliancas de casamento"
@@ -220,7 +220,7 @@
             </div>
 
             {{-- Wide top image --}}
-            <div class="relative col-span-1 md:col-span-2 overflow-hidden aspect-video">
+            <div class="relative col-span-1 md:col-span-2 overflow-hidden aspect-video bg-surface-light">
                 <img
                     src="{{ $galleryUrls[1] ?? 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80' }}"
                     alt="Local do casamento"
@@ -230,7 +230,7 @@
             </div>
 
             {{-- Small top-right image --}}
-            <div class="relative col-span-1 overflow-hidden aspect-square">
+            <div class="relative col-span-1 overflow-hidden aspect-square bg-surface-light">
                 <img
                     src="{{ $galleryUrls[2] ?? 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80' }}"
                     alt="Casal"
@@ -240,7 +240,7 @@
             </div>
 
             {{-- Wide bottom image --}}
-            <div class="relative col-span-2 md:col-span-3 overflow-hidden aspect-video">
+            <div class="relative col-span-2 md:col-span-3 overflow-hidden aspect-video bg-surface-light">
                 <img
                     src="{{ $galleryUrls[3] ?? 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80' }}"
                     alt="Detalhes do casamento"
