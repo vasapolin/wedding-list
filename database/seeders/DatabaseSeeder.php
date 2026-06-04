@@ -5,21 +5,31 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $email = config('wedding.admin_email');
+        $password = config('wedding.admin_password');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $existing = User::query()->where('email', $email)->first();
+
+        if (! $existing) {
+            User::query()->create([
+                'name' => 'Laura & Victor',
+                'email' => $email,
+                'password' => Hash::make($password),
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        $this->call([
+            GiftSeeder::class,
+            SiteAssetSeeder::class,
         ]);
     }
 }
