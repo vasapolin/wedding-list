@@ -258,7 +258,7 @@
             ],
             [
                 'q' => 'Como saberei se o pagamento foi confirmado?',
-                'a' => 'Assim que o pagamento for processado pela Asaas — instantaneo no Pix, alguns minutos no cartao — voce recebera um e-mail de confirmacao com todos os detalhes.',
+                'a' => 'Assim que o pagamento for processado pela Asaas — instantaneo no Pix, alguns minutos no cartao — a tela de acompanhamento exibira a confirmacao com todos os detalhes. Voce pode verificar o status a qualquer momento pelo botao "Verificar pagamento".',
             ],
             [
                 'q' => 'Os noivos recebem o produto fisico?',

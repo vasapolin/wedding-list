@@ -17,7 +17,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'casa',
                 'price_cents' => 68000,
-                'raised_cents' => 51000,
+                'raised_cents' => 0,
                 'sort_order' => 1,
             ],
             [
@@ -26,7 +26,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'casa',
                 'price_cents' => 120000,
-                'raised_cents' => 48000,
+                'raised_cents' => 0,
                 'sort_order' => 2,
             ],
             [
@@ -35,7 +35,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'casa',
                 'price_cents' => 45000,
-                'raised_cents' => 40500,
+                'raised_cents' => 0,
                 'sort_order' => 3,
             ],
             [
@@ -44,7 +44,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'experiencias',
                 'price_cents' => 30000,
-                'raised_cents' => 4500,
+                'raised_cents' => 0,
                 'sort_order' => 4,
             ],
             [
@@ -53,7 +53,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'experiencias',
                 'price_cents' => 50000,
-                'raised_cents' => 25000,
+                'raised_cents' => 0,
                 'sort_order' => 5,
             ],
             [
@@ -62,7 +62,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'casa',
                 'price_cents' => 40000,
-                'raised_cents' => 34000,
+                'raised_cents' => 0,
                 'sort_order' => 6,
             ],
             [
@@ -71,7 +71,7 @@ class GiftSeeder extends Seeder
                 'image_path' => null,
                 'category' => 'lua-de-mel',
                 'price_cents' => 350000,
-                'raised_cents' => 80000,
+                'raised_cents' => 0,
                 'sort_order' => 7,
             ],
         ];
