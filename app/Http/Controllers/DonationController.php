@@ -69,7 +69,7 @@ class DonationController extends Controller
         ]);
 
         try {
-            $asaas->createPixCharge($donation);
+            $asaas->createCharge($donation);
         } catch (\Throwable $e) {
             report($e);
         }
@@ -78,18 +78,28 @@ class DonationController extends Controller
             Session::forget(\App\Http\Controllers\CartController::SESSION_KEY);
         }
 
+        if ($donation->payment_method === 'credit_card' && ($invoiceUrl = $asaas->getInvoiceUrl($donation))) {
+            return redirect()->away($invoiceUrl);
+        }
+
         return redirect()->route('donation.pix', ['donation' => $donation]);
     }
 
-    public function pix(Donation $donation, AsaasClient $asaas): View
+    public function pix(Donation $donation, AsaasClient $asaas): RedirectResponse|View
     {
         if ($donation->status === Donation::STATUS_PENDING && ! $donation->asaas_payment_id) {
             try {
-                $asaas->createPixCharge($donation);
+                $asaas->createCharge($donation);
                 $donation->refresh();
             } catch (\Throwable $e) {
                 report($e);
             }
+        }
+
+        if ($donation->payment_method === 'credit_card'
+            && $donation->status === Donation::STATUS_PENDING
+            && ($invoiceUrl = $asaas->getInvoiceUrl($donation))) {
+            return redirect()->away($invoiceUrl);
         }
 
         return view('donation.pix', [

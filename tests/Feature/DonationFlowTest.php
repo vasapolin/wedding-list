@@ -123,6 +123,95 @@ class DonationFlowTest extends TestCase
         });
     }
 
+    public function test_credit_card_donation_redirects_to_asaas_secure_page(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/customers*' => Http::sequence()
+                ->push(['data' => []])
+                ->push(['id' => 'cus_1']),
+            'api-sandbox.asaas.com/v3/payments' => Http::response([
+                'id' => 'pay_card_1',
+                'status' => 'PENDING',
+                'invoiceUrl' => 'https://sandbox.asaas.com/i/pay_card_1',
+            ]),
+        ]);
+
+        $response = $this->post('/checkout', [
+            'amount' => 200,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
+            'payment_method' => 'credit_card',
+        ]);
+
+        $response->assertRedirect('https://sandbox.asaas.com/i/pay_card_1');
+
+        $donation = Donation::query()->latest()->first();
+        $this->assertSame('credit_card', $donation->payment_method);
+        $this->assertSame('pay_card_1', $donation->asaas_payment_id);
+
+        Http::assertSent(function ($request) use ($donation) {
+            if ($request->method() !== 'POST' || ! str_ends_with($request->url(), '/payments')) {
+                return false;
+            }
+
+            return $request['billingType'] === 'CREDIT_CARD'
+                && $request['callback']['successUrl'] === route('donation.status', $donation);
+        });
+
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'pixQrCode'));
+    }
+
+    public function test_credit_card_without_asaas_key_falls_back_to_status_page(): void
+    {
+        $response = $this->post('/checkout', [
+            'amount' => 200,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
+            'payment_method' => 'credit_card',
+        ]);
+
+        $donation = Donation::query()->latest()->first();
+        $response->assertRedirect(route('donation.pix', ['donation' => $donation]));
+    }
+
+    public function test_pix_donation_still_generates_qr_code(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/customers*' => Http::sequence()
+                ->push(['data' => []])
+                ->push(['id' => 'cus_1']),
+            'api-sandbox.asaas.com/v3/payments' => Http::response([
+                'id' => 'pay_pix_1',
+                'status' => 'PENDING',
+                'invoiceUrl' => 'https://sandbox.asaas.com/i/pay_pix_1',
+            ]),
+            'api-sandbox.asaas.com/v3/payments/pay_pix_1/pixQrCode' => Http::response([
+                'payload' => 'pix-copy-paste',
+                'encodedImage' => base64_encode('img'),
+                'expirationDate' => now()->addDay()->toDateTimeString(),
+            ]),
+        ]);
+
+        $response = $this->post('/checkout', [
+            'amount' => 100,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
+            'payment_method' => 'pix',
+        ]);
+
+        $donation = Donation::query()->latest()->first();
+        $response->assertRedirect(route('donation.pix', ['donation' => $donation]));
+
+        $this->assertSame('pix-copy-paste', $donation->asaas_payload['qr']['payload']);
+
+        Http::assertSent(fn ($request) => str_ends_with($request->url(), '/payments')
+            && $request['billingType'] === 'PIX');
+    }
+
     public function test_webhook_marks_donation_as_paid_and_increments_gift_raised(): void
     {
         $gift = Gift::factory()->create(['price_cents' => 50_000, 'raised_cents' => 0, 'is_active' => true]);

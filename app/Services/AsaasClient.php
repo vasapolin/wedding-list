@@ -19,39 +19,55 @@ class AsaasClient
     }
 
     /**
-     * Create a Pix charge in Asaas and persist QR Code data on the donation.
+     * Create a charge in Asaas (Pix or credit card) and persist its data on
+     * the donation. Pix charges also fetch and store the QR Code payload.
      *
      * If no API key is configured, this no-ops gracefully so the local /
      * dev environment still works (the donation just stays as pending).
      */
-    public function createPixCharge(Donation $donation): void
+    public function createCharge(Donation $donation): void
     {
         if (! $this->isEnabled()) {
             return;
         }
 
+        $isCreditCard = $donation->payment_method === 'credit_card';
         $customerId = $this->ensureCustomer($donation);
 
         $charge = $this->client()->post('/payments', [
             'customer' => $customerId,
-            'billingType' => 'PIX',
+            'billingType' => $isCreditCard ? 'CREDIT_CARD' : 'PIX',
             'value' => round($donation->amount_cents / 100, 2),
             'dueDate' => now()->addDay()->toDateString(),
             'description' => $this->descriptionFor($donation),
             'externalReference' => 'donation-'.$donation->id,
+            'callback' => [
+                'successUrl' => route('donation.status', $donation),
+                'autoRedirect' => true,
+            ],
         ])->throw()->json();
 
-        $qr = $this->client()->get("/payments/{$charge['id']}/pixQrCode")->throw()->json();
+        $payload = ['charge' => $charge];
 
-        $payload = [
-            'charge' => $charge,
-            'qr' => $qr,
-        ];
+        if (! $isCreditCard) {
+            $payload['qr'] = $this->client()
+                ->get("/payments/{$charge['id']}/pixQrCode")
+                ->throw()
+                ->json();
+        }
 
         $donation->update([
             'asaas_payment_id' => $charge['id'],
             'asaas_payload' => array_merge($donation->asaas_payload ?? [], $payload),
         ]);
+    }
+
+    /**
+     * Asaas-hosted secure payment page for the charge (used for credit card).
+     */
+    public function getInvoiceUrl(Donation $donation): ?string
+    {
+        return $donation->asaas_payload['charge']['invoiceUrl'] ?? null;
     }
 
     /**
