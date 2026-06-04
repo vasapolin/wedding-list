@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Donation;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class AsaasClient
@@ -34,7 +35,7 @@ class AsaasClient
         $isCreditCard = $donation->payment_method === 'credit_card';
         $customerId = $this->ensureCustomer($donation);
 
-        $charge = $this->client()->post('/payments', [
+        $chargePayload = [
             'customer' => $customerId,
             'billingType' => $isCreditCard ? 'CREDIT_CARD' : 'PIX',
             'value' => round($donation->amount_cents / 100, 2),
@@ -45,7 +46,16 @@ class AsaasClient
                 'successUrl' => route('donation.status', $donation),
                 'autoRedirect' => true,
             ],
-        ])->throw()->json();
+        ];
+
+        $response = $this->client()->post('/payments', $chargePayload);
+
+        if ($response->status() === 400 && $this->isCallbackDomainError($response)) {
+            unset($chargePayload['callback']);
+            $response = $this->client()->post('/payments', $chargePayload);
+        }
+
+        $charge = $response->throw()->json();
 
         $payload = ['charge' => $charge];
 
@@ -157,6 +167,24 @@ class AsaasClient
         ]);
 
         return $customerId;
+    }
+
+    /**
+     * Asaas rejects payment callbacks when the account has no registered
+     * site domain; in that case the charge is retried without the callback
+     * so payments keep working (the donor just is not auto-redirected back).
+     */
+    protected function isCallbackDomainError(Response $response): bool
+    {
+        $descriptions = collect($response->json('errors') ?? [])
+            ->pluck('description')
+            ->implode(' ');
+
+        $normalized = mb_strtolower($descriptions);
+
+        return str_contains($normalized, 'callback')
+            || str_contains($normalized, 'domínio')
+            || str_contains($normalized, 'dominio');
     }
 
     protected function descriptionFor(Donation $donation): string

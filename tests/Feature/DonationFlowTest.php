@@ -212,6 +212,48 @@ class DonationFlowTest extends TestCase
             && $request['billingType'] === 'PIX');
     }
 
+    public function test_charge_is_retried_without_callback_when_domain_is_not_registered(): void
+    {
+        config()->set('wedding.asaas.api_key', 'test-key');
+
+        Http::fake([
+            'api-sandbox.asaas.com/v3/customers*' => Http::sequence()
+                ->push(['data' => []])
+                ->push(['id' => 'cus_1']),
+            'api-sandbox.asaas.com/v3/payments' => Http::sequence()
+                ->push([
+                    'errors' => [[
+                        'code' => 'invalid_object',
+                        'description' => 'Não há nenhum domínio configurado em sua conta.',
+                    ]],
+                ], 400)
+                ->push([
+                    'id' => 'pay_nocb',
+                    'status' => 'PENDING',
+                    'invoiceUrl' => 'https://sandbox.asaas.com/i/pay_nocb',
+                ]),
+            'api-sandbox.asaas.com/v3/payments/pay_nocb/pixQrCode' => Http::response([
+                'payload' => 'pix-copy-paste',
+                'encodedImage' => base64_encode('img'),
+                'expirationDate' => now()->addDay()->toDateTimeString(),
+            ]),
+        ]);
+
+        $this->post('/checkout', [
+            'amount' => 100,
+            'donor_email' => 'tio@example.com',
+            'donor_document' => '52998224725',
+            'payment_method' => 'pix',
+        ]);
+
+        $donation = Donation::query()->latest()->first();
+        $this->assertSame('pay_nocb', $donation->asaas_payment_id);
+
+        Http::assertSent(fn ($request) => $request->method() === 'POST'
+            && str_ends_with($request->url(), '/payments')
+            && ! isset($request['callback']));
+    }
+
     public function test_webhook_marks_donation_as_paid_and_increments_gift_raised(): void
     {
         $gift = Gift::factory()->create(['price_cents' => 50_000, 'raised_cents' => 0, 'is_active' => true]);
