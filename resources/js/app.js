@@ -49,6 +49,9 @@ function setupReveals() {
     );
 
     elements.forEach((el) => observer.observe(el));
+
+    // Observers are live — the CSS auto-reveal safety net is not needed.
+    document.documentElement.classList.add('reveal-armed');
 }
 
 function random(min, max) {

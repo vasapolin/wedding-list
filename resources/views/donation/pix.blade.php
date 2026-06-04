@@ -52,11 +52,24 @@
                             </button>
                         </div>
                     </div>
+                @elseif($donation->asaas_payment_id)
+                    <div class="w-full mb-8 p-6 bg-surface-light border border-surface-border text-center">
+                        <p class="font-sans text-sm text-ink mb-3">Seu QR Code Pix está sendo gerado.</p>
+                        <p class="font-sans text-xs text-ink-muted mb-5">
+                            Isso costuma levar apenas alguns segundos.
+                        </p>
+                        <a
+                            href="{{ route('donation.pix', $donation) }}"
+                            class="inline-block font-sans text-xs uppercase tracking-widest px-6 py-3 border border-coastal text-coastal hover:bg-coastal hover:text-black transition-colors duration-200"
+                        >
+                            Recarregar
+                        </a>
+                    </div>
                 @else
                     <div class="w-full mb-8 p-6 bg-surface-light border border-surface-border">
-                        <p class="font-sans text-sm text-ink mb-3">Cobrança gerada com sucesso.</p>
+                        <p class="font-sans text-sm text-ink mb-3">Doação registrada.</p>
                         <p class="font-sans text-xs text-ink-muted mb-3">
-                            O sistema de pagamento online ainda não foi configurado. Por enquanto, faça um Pix manual para o casal e clique em "Já paguei" — nós confirmaremos a entrada do valor.
+                            O sistema de pagamento online ainda não foi configurado. Por enquanto, faça um Pix manual para o casal — nós confirmaremos a entrada do valor.
                         </p>
                         <p class="font-mono text-xs text-coastal">ID interno: {{ $donation->id }}</p>
                     </div>

@@ -3,7 +3,7 @@
 @section('title', 'Checkout - Laura & Victor')
 
 @section('content')
-<div class="pt-28 pb-24 px-4 min-h-screen bg-black" x-data="{ paymentMethod: 'pix' }">
+<div class="pt-28 pb-24 px-4 min-h-screen bg-black" x-data="{ paymentMethod: '{{ old('payment_method', 'pix') }}', submitting: false }">
     <div class="max-w-5xl mx-auto">
 
         {{-- Progress Stepper --}}
@@ -38,7 +38,7 @@
                 </a>
             </div>
         @else
-        <form method="POST" action="{{ route('donation.store') }}" class="flex flex-col lg:flex-row gap-10">
+        <form method="POST" action="{{ route('donation.store') }}" class="flex flex-col lg:flex-row gap-10" @submit="submitting = true">
             @csrf
             <input type="hidden" name="use_cart" value="1" />
 
@@ -57,6 +57,7 @@
                                     placeholder="Seu nome"
                                     type="text"
                                 />
+                                @error('donor_name')<p class="font-sans text-xs text-red-400 mt-1">{{ $message }}</p>@enderror
                             </div>
                             <div>
                                 <label class="block font-sans text-xs uppercase tracking-widest text-ink-muted mb-3">E-mail</label>
@@ -104,11 +105,11 @@
 
                     <div class="flex border border-surface-border mb-8">
                         <label class="flex-1">
-                            <input type="radio" name="payment_method" value="pix" class="sr-only peer" x-model="paymentMethod" checked />
+                            <input type="radio" name="payment_method" value="pix" class="sr-only peer" x-model="paymentMethod" {{ old('payment_method', 'pix') === 'pix' ? 'checked' : '' }} />
                             <div class="font-sans text-xs uppercase tracking-widest py-3 px-6 transition-colors duration-200 text-center cursor-pointer peer-checked:bg-coastal peer-checked:text-black bg-surface text-ink-muted hover:text-ink">Pix</div>
                         </label>
                         <label class="flex-1 border-l border-surface-border">
-                            <input type="radio" name="payment_method" value="credit_card" class="sr-only peer" x-model="paymentMethod" />
+                            <input type="radio" name="payment_method" value="credit_card" class="sr-only peer" x-model="paymentMethod" {{ old('payment_method') === 'credit_card' ? 'checked' : '' }} />
                             <div class="font-sans text-xs uppercase tracking-widest py-3 px-6 transition-colors duration-200 text-center cursor-pointer peer-checked:bg-coastal peer-checked:text-black bg-surface text-ink-muted hover:text-ink">Cartão de Crédito</div>
                         </label>
                     </div>
@@ -175,9 +176,12 @@
 
                     <button
                         type="submit"
+                        :disabled="submitting"
+                        :class="submitting ? 'opacity-60 cursor-wait' : ''"
                         class="block w-full text-center bg-coastal hover:bg-coastal-dark transition-colors duration-300 text-black font-sans text-xs uppercase tracking-widest py-4"
                     >
-                        Finalizar Doação
+                        <span x-show="! submitting">Finalizar Doação</span>
+                        <span x-show="submitting" x-cloak>Processando...</span>
                     </button>
                     <p class="font-sans text-xs text-ink-muted text-center mt-4">
                         Conexão SSL criptografada

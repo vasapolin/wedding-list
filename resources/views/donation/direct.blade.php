@@ -17,11 +17,18 @@
         </div>
 
         {{-- Form Card --}}
+        @php
+            $presetAmounts = [50, 100, 200, 500];
+            $oldAmount = old('amount', request('amount', 100));
+            $oldAmountIsPreset = in_array((int) $oldAmount, $presetAmounts, true)
+                && (float) $oldAmount === (float) ((int) $oldAmount);
+        @endphp
         <form
             method="POST"
             action="{{ route('donation.store') }}"
             class="bg-surface border border-surface-border p-8 lg:p-10"
-            x-data="{ selectedAmount: {{ (int) ($amount ?? request('amount', 100)) }}, customAmount: '', anonymous: false }"
+            x-data="{ selectedAmount: {{ $oldAmountIsPreset ? (int) $oldAmount : 0 }}, customAmount: '{{ $oldAmountIsPreset ? '' : e($oldAmount) }}', anonymous: false, submitting: false }"
+            @submit="submitting = true"
         >
             @csrf
 
@@ -29,7 +36,7 @@
             <div class="mb-8">
                 <p class="font-sans text-xs uppercase tracking-widest text-ink-muted mb-5">Selecione um valor</p>
                 <div class="grid grid-cols-4 gap-3">
-                    @foreach([50, 100, 200, 500] as $amount)
+                    @foreach($presetAmounts as $amount)
                     <label class="cursor-pointer">
                         <input
                             class="sr-only peer"
@@ -38,7 +45,7 @@
                             value="{{ $amount }}"
                             x-model.number="selectedAmount"
                             @change="customAmount = ''"
-                            {{ (int) request('amount', 100) === $amount ? 'checked' : '' }}
+                            {{ $oldAmountIsPreset && (int) $oldAmount === $amount ? 'checked' : '' }}
                         />
                         <div class="flex h-12 items-center justify-center border border-surface-border peer-checked:border-coastal peer-checked:bg-coastal peer-checked:text-black text-ink-light transition-colors duration-200 cursor-pointer">
                             <span class="font-sans text-sm font-medium">R$&nbsp;{{ $amount }}</span>
@@ -62,6 +69,7 @@
                         inputmode="decimal"
                     />
                 </div>
+                @error('amount')<p class="font-sans text-xs text-red-400 mt-2">{{ $message }}</p>@enderror
             </div>
 
             {{-- Hidden actual amount --}}
@@ -84,6 +92,7 @@
                     placeholder="Como quer ser identificado?"
                     type="text"
                 />
+                @error('donor_name')<p class="font-sans text-xs text-red-400 mt-1">{{ $message }}</p>@enderror
             </div>
 
             {{-- E-mail (necessário pra cobrança Asaas) --}}
@@ -163,9 +172,12 @@
             {{-- CTA --}}
             <button
                 type="submit"
+                :disabled="submitting"
+                :class="submitting ? 'opacity-60 cursor-wait' : ''"
                 class="block w-full text-center bg-coastal hover:bg-coastal-dark transition-colors duration-300 text-black font-sans text-xs uppercase tracking-widest py-4"
             >
-                Continuar para pagamento
+                <span x-show="! submitting">Continuar para pagamento</span>
+                <span x-show="submitting" x-cloak>Processando...</span>
             </button>
 
             <p class="font-sans text-xs text-ink-muted text-center mt-5">
