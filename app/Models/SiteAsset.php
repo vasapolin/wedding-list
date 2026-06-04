@@ -25,8 +25,8 @@ class SiteAsset extends Model
 
     public static function url(string $key, ?string $default = null): ?string
     {
-        $asset = static::query()->where('key', $key)->first();
+        $assets = once(fn () => static::query()->get()->keyBy('key'));
 
-        return $asset?->url ?? $default;
+        return $assets[$key]?->url ?? $default;
     }
 }

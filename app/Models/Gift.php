@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Gift extends Model
@@ -61,6 +62,21 @@ class Gift extends Model
     public function donations(): HasMany
     {
         return $this->hasMany(Donation::class);
+    }
+
+    /**
+     * Uploaded gift photo, falling back to the admin-managed placeholder.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image_path) {
+            return Storage::disk('public')->url($this->image_path);
+        }
+
+        return SiteAsset::url(
+            'gifts.placeholder',
+            'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80',
+        );
     }
 
     public function getPriceAttribute(): float

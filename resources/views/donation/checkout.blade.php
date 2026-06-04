@@ -143,7 +143,7 @@
                         @foreach($cart->items() as $item)
                             @php
                                 $g = $item['gift'];
-                                $imageUrl = $g->image_path ? \Illuminate\Support\Facades\Storage::disk('public')->url($g->image_path) : null;
+                                $imageUrl = $g->image_url;
                             @endphp
                             <div class="flex gap-4">
                                 <div class="w-14 h-14 shrink-0 bg-cover bg-center bg-surface-light border border-surface-border" @if($imageUrl) style="background-image: url('{{ $imageUrl }}')" @endif></div>

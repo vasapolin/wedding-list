@@ -40,7 +40,7 @@
             <div class="flex-1 w-full max-w-lg lg:max-w-none">
                 <div class="relative overflow-hidden rounded-sm aspect-[4/5]">
                     <img
-                        src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80"
+                        src="{{ \App\Models\SiteAsset::url('how-to-donate.hero', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80') }}"
                         alt="Casamento Laura e Victor"
                         class="absolute inset-0 w-full h-full object-cover"
                         loading="eager"
@@ -141,7 +141,7 @@
             <div class="flex-1 bg-surface border border-surface-border flex flex-col overflow-hidden">
                 <div class="relative overflow-hidden aspect-video">
                     <img
-                        src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80"
+                        src="{{ \App\Models\SiteAsset::url('how-to-donate.detail', 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80') }}"
                         alt="Presentes Simbolicos"
                         class="absolute inset-0 w-full h-full object-cover"
                         loading="lazy"

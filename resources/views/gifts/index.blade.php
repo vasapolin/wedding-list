@@ -60,9 +60,7 @@
             @forelse($gifts as $gift)
                 <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
                     @php
-                        $imageUrl = $gift->image_path
-                            ? \Illuminate\Support\Facades\Storage::disk('public')->url($gift->image_path)
-                            : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80';
+                        $imageUrl = $gift->image_url;
                     @endphp
                     <div
                         class="aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.02]"
@@ -123,9 +121,7 @@
             @forelse($cart->items() as $item)
                 @php
                     $g = $item['gift'];
-                    $imageUrl = $g->image_path
-                        ? \Illuminate\Support\Facades\Storage::disk('public')->url($g->image_path)
-                        : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=200&q=80';
+                    $imageUrl = $g->image_url;
                 @endphp
                 <div class="flex gap-4 pb-5 border-b border-surface-border">
                     <div class="w-16 h-16 shrink-0 bg-cover bg-center" style="background-image: url('{{ $imageUrl }}')"></div>

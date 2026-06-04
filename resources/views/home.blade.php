@@ -167,9 +167,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-surface-border">
             @foreach($featuredGifts ?? [] as $gift)
                 @php
-                    $imageUrl = $gift->image_path
-                        ? \Illuminate\Support\Facades\Storage::disk('public')->url($gift->image_path)
-                        : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80';
+                    $imageUrl = $gift->image_url;
                 @endphp
                 <x-gift-card
                     :name="$gift->name"
