@@ -7,7 +7,7 @@
 {{-- ============================================================
      HERO
      ============================================================ --}}
-<section class="relative pt-28 pb-0 h-[420px] flex flex-col items-center justify-center overflow-hidden">
+<section class="relative pt-28 pb-0 h-[420px] flex flex-col items-center justify-center overflow-hidden" data-petals="10">
 
     {{-- Background image --}}
     <div
@@ -20,13 +20,13 @@
 
     {{-- Content --}}
     <div class="relative z-10 flex flex-col items-center text-center px-6 gap-5">
-        <p class="font-sans text-[10px] tracking-[0.4em] uppercase text-coastal">
+        <p class="font-sans text-[10px] tracking-[0.4em] uppercase text-coastal hero-enter">
             Laura & Victor — 13 de Setembro, 2026
         </p>
-        <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl text-white leading-tight">
+        <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl text-white leading-tight hero-enter hero-enter-1">
             Mural de Mensagens
         </h1>
-        <p class="font-sans text-sm text-white/70 max-w-md leading-relaxed">
+        <p class="font-sans text-sm text-white/70 max-w-md leading-relaxed hero-enter hero-enter-2">
             Compartilhe seus pensamentos e desejos para o casal neste dia tão especial.
         </p>
     </div>
@@ -43,7 +43,7 @@
         <div class="lg:col-span-4 flex flex-col gap-6">
 
             {{-- Message Form Card --}}
-            <div class="bg-surface border border-surface-border p-8 flex flex-col gap-6">
+            <div class="bg-surface border border-surface-border p-8 flex flex-col gap-6" data-reveal>
 
                 <div class="flex flex-col gap-1">
                     <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal">

@@ -7,11 +7,12 @@
 {{-- ============================================================
      HERO
      ============================================================ --}}
-<section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden">
+<section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden" data-petals="14">
 
     {{-- Background image --}}
     <div
-        class="absolute inset-0 bg-center bg-cover"
+        class="absolute inset-0 bg-center bg-cover scale-110 will-change-transform"
+        data-parallax="0.18"
         style="background-image: url('{{ $heroUrl ?? 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80' }}')"
     ></div>
 
@@ -21,11 +22,11 @@
     {{-- Content --}}
     <div class="relative z-10 flex flex-col items-center text-center px-6 py-32 gap-8">
 
-        <p class="font-sans text-[10px] tracking-[0.4em] uppercase text-coastal">
+        <p class="font-sans text-[10px] tracking-[0.4em] uppercase text-coastal hero-enter">
             13 de Setembro, 2026
         </p>
 
-        <div class="flex flex-col items-center gap-1">
+        <div class="flex flex-col items-center gap-1 hero-enter hero-enter-1">
             <h1 class="font-serif text-[clamp(4rem,14vw,10rem)] leading-none text-vanilla tracking-tight">
                 Laura
             </h1>
@@ -35,14 +36,14 @@
             </h1>
         </div>
 
-        <div class="decorative-line w-24 my-2"></div>
+        <div class="decorative-line w-24 my-2 hero-enter hero-enter-2"></div>
 
-        <p class="font-sans text-xs text-ink-muted tracking-[0.25em] uppercase">
+        <p class="font-sans text-xs text-ink-muted tracking-[0.25em] uppercase hero-enter hero-enter-2">
             Joinville, Santa Catarina &ensp;&middot;&ensp; 16h30
         </p>
 
         {{-- Countdown --}}
-        <div x-data="countdown()" x-init="start()" class="flex items-center gap-6 sm:gap-10 pt-2">
+        <div x-data="countdown()" x-init="start()" class="flex items-center gap-6 sm:gap-10 pt-2 hero-enter hero-enter-3">
             <div class="flex flex-col items-center">
                 <span x-text="days" class="font-serif text-4xl sm:text-5xl text-vanilla leading-none">0</span>
                 <span class="font-sans text-[9px] tracking-[0.3em] uppercase text-ink-muted mt-2">Dias</span>
@@ -64,7 +65,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 hero-enter hero-enter-4">
             <a
                 href="/presentes"
                 class="font-sans text-xs tracking-[0.25em] uppercase px-9 py-4 border border-coastal text-coastal hover:bg-coastal hover:text-black transition-all duration-300"
@@ -83,7 +84,7 @@
 
     {{-- Scroll cue --}}
     <div class="absolute bottom-10 left-1/2 -translate-x-1/2">
-        <div class="w-px h-14 bg-coastal/30 mx-auto"></div>
+        <div class="w-px h-14 bg-coastal/30 mx-auto scroll-cue"></div>
     </div>
 
 </section>
@@ -94,7 +95,7 @@
 <section class="py-28 bg-black" id="como-funciona">
     <div class="max-w-5xl mx-auto px-6">
 
-        <div class="text-center mb-20">
+        <div class="text-center mb-20" data-reveal>
             <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal mb-4">Simples e seguro</p>
             <h2 class="font-serif text-4xl md:text-5xl text-vanilla">Como Funciona</h2>
         </div>
@@ -102,7 +103,7 @@
         <div class="grid md:grid-cols-3 gap-6">
 
             {{-- Step 1 --}}
-            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6">
+            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6" data-reveal>
                 <div class="w-11 h-11 rounded-full border border-coastal flex items-center justify-center shrink-0">
                     <span class="font-serif text-lg text-coastal leading-none">1</span>
                 </div>
@@ -115,7 +116,7 @@
             </div>
 
             {{-- Step 2 --}}
-            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6">
+            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6" data-reveal data-reveal-delay="1">
                 <div class="w-11 h-11 rounded-full border border-coastal flex items-center justify-center shrink-0">
                     <span class="font-serif text-lg text-coastal leading-none">2</span>
                 </div>
@@ -128,7 +129,7 @@
             </div>
 
             {{-- Step 3 --}}
-            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6">
+            <div class="bg-surface border border-surface-border p-10 flex flex-col gap-6" data-reveal data-reveal-delay="2">
                 <div class="w-11 h-11 rounded-full border border-coastal flex items-center justify-center shrink-0">
                     <span class="font-serif text-lg text-coastal leading-none">3</span>
                 </div>
@@ -150,7 +151,7 @@
 <section class="py-28 bg-black" id="lista">
     <div class="max-w-5xl mx-auto px-6">
 
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6" data-reveal>
             <div class="flex flex-col gap-3">
                 <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal">Lista de Casamento</p>
                 <h2 class="font-serif text-4xl md:text-5xl text-vanilla">Presentes em Destaque</h2>
@@ -164,7 +165,7 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-surface-border">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-surface-border" data-reveal data-reveal-delay="1">
             @foreach($featuredGifts ?? [] as $gift)
                 @php
                     $imageUrl = $gift->image_url;
@@ -194,17 +195,17 @@
 {{-- ============================================================
      GALLERY — NOSSA HISTORIA
      ============================================================ --}}
-<section class="py-28 bg-surface" id="nossa-historia">
-    <div class="max-w-5xl mx-auto px-6">
+<section class="py-28 bg-surface relative overflow-hidden" id="nossa-historia" data-sparkles="10">
+    <div class="max-w-5xl mx-auto px-6 relative">
 
-        <div class="text-center mb-16">
+        <div class="text-center mb-16" data-reveal>
             <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal mb-4">Um pouco sobre nos</p>
             <h2 class="font-serif text-4xl md:text-5xl text-vanilla">Nossa Historia</h2>
-            <div class="decorative-line w-24 mx-auto mt-6"></div>
+            <div class="decorative-line w-24 mx-auto mt-6 reveal-line" data-reveal data-reveal-delay="1"></div>
         </div>
 
         {{-- Masonry-like grid --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2" data-reveal data-reveal-delay="1">
 
             @php($galleryUrls = $galleryUrls ?? [])
 
@@ -256,10 +257,10 @@
 {{-- ============================================================
      CONTACT CTA
      ============================================================ --}}
-<section class="py-28 bg-black" id="contato">
-    <div class="max-w-3xl mx-auto px-6">
+<section class="py-28 bg-black relative overflow-hidden" id="contato" data-sparkles="6">
+    <div class="max-w-3xl mx-auto px-6 relative">
 
-        <div class="bg-surface border border-surface-border p-10 md:p-16 flex flex-col gap-10">
+        <div class="bg-surface border border-surface-border p-10 md:p-16 flex flex-col gap-10" data-reveal>
 
             <div class="flex flex-col gap-3 text-center">
                 <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal">Estamos aqui</p>

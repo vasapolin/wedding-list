@@ -9,7 +9,7 @@
     <div class="flex-1 px-6 lg:px-16 xl:pr-12 xl:border-r border-surface-border">
 
         {{-- Header --}}
-        <header class="pt-28 pb-10">
+        <header class="pt-28 pb-10" data-reveal>
             <p class="font-sans text-xs tracking-[0.2em] uppercase text-coastal mb-4">Laura &amp; Victor · 2026</p>
             <h1 class="font-serif text-5xl md:text-6xl text-ink leading-tight mb-4">Lista de Presentes</h1>
             <div class="decorative-line w-24 mb-6"></div>
@@ -58,7 +58,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 pb-24">
 
             @forelse($gifts as $gift)
-                <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group">
+                <div class="bg-surface border border-surface-border overflow-hidden flex flex-col group" data-reveal @if($loop->index % 3 > 0) data-reveal-delay="{{ $loop->index % 3 }}" @endif>
                     @php
                         $imageUrl = $gift->image_url;
                     @endphp

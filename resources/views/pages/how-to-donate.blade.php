@@ -12,7 +12,7 @@
         <div class="flex flex-col lg:flex-row items-center gap-16">
 
             {{-- Left: Text --}}
-            <div class="flex-1 flex flex-col gap-8">
+            <div class="flex-1 flex flex-col gap-8" data-reveal>
                 <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal">
                     Guia de Presentear
                 </p>
@@ -64,7 +64,7 @@
 <section class="py-28 px-6 lg:px-10 bg-surface">
     <div class="max-w-5xl mx-auto">
 
-        <div class="text-center mb-20">
+        <div class="text-center mb-20" data-reveal>
             <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal mb-4">Passo a Passo</p>
             <h2 class="font-serif text-4xl md:text-5xl font-light text-vanilla">
                 Como funciona
@@ -72,7 +72,7 @@
             <div class="decorative-line w-24 mx-auto mt-6"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-reveal data-reveal-delay="1">
 
             {{-- Step 1 --}}
             <div class="bg-black border border-surface-border p-10 flex flex-col gap-6">
