@@ -296,9 +296,29 @@ fly certs check wedding.vasapolin.com -a wedding-list-noble-tree-9371
 - The `docker/entrypoint.sh` runs as **root** so it can `chown /data`. FrankenPHP itself drops to `www-data` for request handling per the Caddyfile.
 - DNS records on Cloudflare for `wedding` must be **DNS only** (gray cloud), not Proxied — proxying breaks Fly's Let's Encrypt validation flow.
 
-### When integrating payments (Asaas) later
+### Admin panel (Filament v5)
 
-- Store Asaas API key as a Fly secret: `fly secrets set ASAAS_API_KEY=...`
-- Add the webhook route path to CSRF exclusions in `bootstrap/app.php`: `$middleware->validateCsrfTokens(except: ['api/asaas-webhook'])`
-- Use `Http::post(...)` to call the Asaas API from PHP — no separate function needed.
+- URL: `/admin` (login at `/admin/login`).
+- Default seeded login: `victor.vencedor2005@gmail.com` / `laura-victor-2026`. Configurable via `WEDDING_ADMIN_EMAIL` / `WEDDING_ADMIN_PASSWORD` env vars (only used on first seed; later password changes via the admin UI persist on the volume's SQLite).
+- Resources live in `app/Filament/Resources/{Gifts,Donations,SiteAssets}` (one folder per Resource per Filament v5 convention).
+- `Gift::booted()` auto-generates a unique slug if missing. The `WithoutModelEvents` trait on `DatabaseSeeder` bypasses this — seeders set `slug` explicitly.
+- Image uploads write to `storage/app/public/{gifts,site}/` which the entrypoint symlinks to `/data/uploads` so they survive deploys.
+
+### Asaas integration
+
+- `App\Services\AsaasClient` is a thin wrapper around `Http::baseUrl(...)`. If `ASAAS_API_KEY` is empty, all methods no-op so dev/staging keep working.
+- Set `ASAAS_API_KEY` (and `ASAAS_WEBHOOK_TOKEN`) as Fly secrets, plus `ASAAS_ENV=production` when going live (defaults to `sandbox`).
+- Webhook endpoint: `POST /api/asaas-webhook` (already excluded from CSRF in `bootstrap/app.php`). Configure this URL in the Asaas dashboard. If `ASAAS_WEBHOOK_TOKEN` is set, requests must send the `asaas-access-token` header matching it.
+- The webhook handler increments `gifts.raised_cents` only on first transition to PAID, so retries are idempotent.
+
+### Domain model
+
+- `gifts` — wedding gifts; price/raised stored in cents; `is_active` + `sort_order` control public listing.
+- `donations` — pending → paid lifecycle driven by Asaas webhook. `gift_id` is nullable (cart/free donations aren't tied to a single gift).
+- `messages` — public mural; `is_approved` defaults to true (no moderation v1).
+- `site_assets` — keyed CMS images (e.g. `home.hero`, `home.gallery.1`); `SiteAsset::url($key, $default)` reads the upload or `fallback_url`.
+
+### Cart
+
+- `App\Services\Cart` reads/writes session under `wedding_cart`. Globally injected into Blade views as `$cart` via `View::composer('*')` in `AppServiceProvider`.
 

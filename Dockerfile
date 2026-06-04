@@ -10,7 +10,9 @@ RUN composer install \
     --no-autoloader \
     --prefer-dist \
     --no-interaction \
-    --no-progress
+    --no-progress \
+    --ignore-platform-req=ext-intl \
+    --ignore-platform-req=ext-gd
 
 # ---------- Stage 2: Frontend assets ----------
 FROM node:22-alpine AS node-build
@@ -24,7 +26,7 @@ RUN npm run build
 # ---------- Stage 3: Runtime (FrankenPHP) ----------
 FROM dunglas/frankenphp:1-php8.2
 
-RUN install-php-extensions pdo_sqlite opcache
+RUN install-php-extensions pdo_sqlite opcache intl gd zip bcmath
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
