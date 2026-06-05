@@ -19,6 +19,23 @@ class ContentCleanupTest extends TestCase
             ->assertDontSee('e-mail de confirmação');
     }
 
+    public function test_how_to_donate_does_not_show_faq_section(): void
+    {
+        $this->get('/como-doar')
+            ->assertOk()
+            ->assertDontSee('Perguntas Frequentes')
+            ->assertDontSee('openFaq');
+    }
+
+    public function test_home_does_not_show_our_story_section(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('nossa-historia')
+            ->assertDontSee('Nossa Historia')
+            ->assertDontSee('Um pouco sobre nos');
+    }
+
     public function test_gift_seeder_starts_with_zero_raised(): void
     {
         $this->seed(GiftSeeder::class);

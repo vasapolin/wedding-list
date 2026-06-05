@@ -58,6 +58,7 @@ class GiftForm
                             ->label('Foto do presente')
                             ->image()
                             ->imageEditor()
+                            ->disk('public')
                             ->directory('gifts')
                             ->visibility('public')
                             ->maxSize(5120)

@@ -19,12 +19,7 @@ class HomeController extends Controller
         return view('home', [
             'featuredGifts' => $featuredGifts,
             'heroUrl' => SiteAsset::url('home.hero'),
-            'galleryUrls' => [
-                SiteAsset::url('home.gallery.1'),
-                SiteAsset::url('home.gallery.2'),
-                SiteAsset::url('home.gallery.3'),
-                SiteAsset::url('home.gallery.4'),
-            ],
+            'heroMobileUrl' => SiteAsset::url('home.hero.mobile'),
         ]);
     }
 }

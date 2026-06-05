@@ -183,12 +183,14 @@
 
             {{-- Contribuicao Flexivel --}}
             <div class="flex-1 bg-coastal flex flex-col overflow-hidden">
-                <div class="aspect-video bg-coastal-dark/60 flex items-center justify-center relative overflow-hidden">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                        <div class="w-24 h-px bg-black/20"></div>
-                        <p class="font-serif text-4xl text-black/20 font-light">R$</p>
-                        <div class="w-24 h-px bg-black/20"></div>
-                    </div>
+                <div class="relative overflow-hidden aspect-video">
+                    <img
+                        src="{{ \App\Models\SiteAsset::url('how-to-donate.flexible', 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80') }}"
+                        alt="Contribuicao Flexivel"
+                        class="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                    />
+                    <div class="absolute inset-0 bg-black/30"></div>
                 </div>
                 <div class="flex flex-col flex-1 gap-6 p-8">
                     <div class="flex flex-col gap-2">
@@ -214,7 +216,7 @@
                     </ul>
                     <div class="mt-auto pt-4">
                         <a
-                            href="/doar"
+                            href="/doar/direto"
                             class="inline-block font-sans text-xs tracking-[0.25em] uppercase px-7 py-3 bg-black text-vanilla hover:bg-surface-light transition-all duration-300"
                         >
                             Contribuir com Valor Livre
@@ -224,85 +226,6 @@
             </div>
 
         </div>
-    </div>
-</section>
-
-{{-- Decorative line --}}
-<div class="max-w-5xl mx-auto px-6 lg:px-10">
-    <div class="decorative-line"></div>
-</div>
-
-{{-- ============================================================
-     FAQ
-     ============================================================ --}}
-<section class="py-28 px-6 lg:px-10 bg-black" x-data="{ openFaq: null }">
-    <div class="max-w-2xl mx-auto">
-
-        <div class="text-center mb-16">
-            <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal mb-4">Duvidas</p>
-            <h2 class="font-serif text-4xl md:text-5xl font-light text-vanilla">
-                Perguntas Frequentes
-            </h2>
-            <div class="decorative-line w-24 mx-auto mt-6"></div>
-        </div>
-
-        @php
-        $faqs = [
-            [
-                'q' => 'Posso enviar uma mensagem junto ao presente?',
-                'a' => 'Sim! Apos a confirmacao do pagamento, voce tera um espaco dedicado para escrever uma mensagem especial para o casal. Leremos cada uma delas com muito carinho.',
-            ],
-            [
-                'q' => 'A doacao pode ser anonima?',
-                'a' => 'Sim. No momento do checkout voce pode optar por nao exibir seu nome na lista publica de presentes. Mesmo assim, nos (os noivos) sempre saberemos quem nos presenteou para podermos agradecer pessoalmente.',
-            ],
-            [
-                'q' => 'Como saberei se o pagamento foi confirmado?',
-                'a' => 'Assim que o pagamento for processado pela Asaas — instantaneo no Pix, alguns minutos no cartao — a tela de acompanhamento exibira a confirmacao com todos os detalhes. Voce pode verificar o status a qualquer momento pelo botao "Verificar pagamento".',
-            ],
-            [
-                'q' => 'Os noivos recebem o produto fisico?',
-                'a' => 'Nao. Todos os itens da lista sao simbolicos. Recebemos o valor em dinheiro para organizar nossa casa e nossa lua de mel da forma que for mais conveniente para nos.',
-            ],
-        ];
-        @endphp
-
-        <div class="flex flex-col">
-            @foreach($faqs as $i => $faq)
-            <div
-                class="border-b border-surface-border {{ $i === 0 ? 'border-t' : '' }}"
-            >
-                <button
-                    @click="openFaq === {{ $i }} ? openFaq = null : openFaq = {{ $i }}"
-                    class="flex items-center justify-between w-full py-6 text-left gap-8 cursor-pointer group"
-                    type="button"
-                >
-                    <span
-                        class="font-serif text-xl font-light transition-colors duration-200"
-                        :class="openFaq === {{ $i }} ? 'text-coastal' : 'text-vanilla group-hover:text-coastal'"
-                    >
-                        {{ $faq['q'] }}
-                    </span>
-                    <span
-                        class="font-serif text-2xl font-light text-coastal shrink-0 transition-transform duration-300 leading-none"
-                        :class="openFaq === {{ $i }} ? 'rotate-45' : ''"
-                    >
-                        +
-                    </span>
-                </button>
-                <div
-                    x-show="openFaq === {{ $i }}"
-                    x-collapse
-                    x-cloak
-                >
-                    <p class="font-sans text-sm text-ink-muted leading-relaxed pb-6">
-                        {{ $faq['a'] }}
-                    </p>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
     </div>
 </section>
 

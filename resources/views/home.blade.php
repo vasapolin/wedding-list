@@ -9,9 +9,14 @@
      ============================================================ --}}
 <section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden" data-petals="14">
 
-    {{-- Background image --}}
+    {{-- Background image (mobile: retrato inteiro / desktop: recorte panorâmico) --}}
     <div
-        class="absolute inset-0 bg-center bg-cover scale-110 will-change-transform"
+        class="absolute inset-0 bg-center bg-cover scale-110 will-change-transform md:hidden"
+        data-parallax="0.18"
+        style="background-image: url('{{ $heroMobileUrl ?? $heroUrl ?? 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80' }}')"
+    ></div>
+    <div
+        class="absolute inset-0 bg-center bg-cover scale-110 will-change-transform hidden md:block"
         data-parallax="0.18"
         style="background-image: url('{{ $heroUrl ?? 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80' }}')"
     ></div>
@@ -187,68 +192,6 @@
             >
                 Ver todos os presentes
             </a>
-        </div>
-
-    </div>
-</section>
-
-{{-- ============================================================
-     GALLERY — NOSSA HISTORIA
-     ============================================================ --}}
-<section class="py-28 bg-surface relative overflow-hidden" id="nossa-historia" data-sparkles="10">
-    <div class="max-w-5xl mx-auto px-6 relative">
-
-        <div class="text-center mb-16" data-reveal>
-            <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal mb-4">Um pouco sobre nos</p>
-            <h2 class="font-serif text-4xl md:text-5xl text-vanilla">Nossa Historia</h2>
-            <div class="decorative-line w-24 mx-auto mt-6 reveal-line" data-reveal data-reveal-delay="1"></div>
-        </div>
-
-        {{-- Masonry-like grid --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2" data-reveal data-reveal-delay="1">
-
-            @php($galleryUrls = $galleryUrls ?? [])
-
-            {{-- Tall left image: spans 2 rows on md --}}
-            <div class="relative col-span-1 md:row-span-2 overflow-hidden aspect-[3/4] md:aspect-auto bg-surface-light">
-                <img
-                    src="{{ $galleryUrls[0] ?? 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80' }}"
-                    alt="Aliancas de casamento"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                />
-            </div>
-
-            {{-- Wide top image --}}
-            <div class="relative col-span-1 md:col-span-2 overflow-hidden aspect-video bg-surface-light">
-                <img
-                    src="{{ $galleryUrls[1] ?? 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80' }}"
-                    alt="Local do casamento"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                />
-            </div>
-
-            {{-- Small top-right image --}}
-            <div class="relative col-span-1 overflow-hidden aspect-square bg-surface-light">
-                <img
-                    src="{{ $galleryUrls[2] ?? 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80' }}"
-                    alt="Casal"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                />
-            </div>
-
-            {{-- Wide bottom image --}}
-            <div class="relative col-span-2 md:col-span-3 overflow-hidden aspect-video bg-surface-light">
-                <img
-                    src="{{ $galleryUrls[3] ?? 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80' }}"
-                    alt="Detalhes do casamento"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                />
-            </div>
-
         </div>
 
     </div>

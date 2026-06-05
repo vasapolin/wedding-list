@@ -11,6 +11,33 @@ class SiteImagesTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_home_hero_serves_mobile_and_desktop_variants(): void
+    {
+        SiteAsset::query()->create([
+            'key' => 'home.hero',
+            'label' => 'Home — Hero (fundo)',
+            'fallback_url' => '/images/site/home-hero.jpg',
+        ]);
+        SiteAsset::query()->create([
+            'key' => 'home.hero.mobile',
+            'label' => 'Home — Hero (fundo mobile)',
+            'fallback_url' => '/images/site/home-hero-mobile.jpg',
+        ]);
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/class="[^"]*md:hidden[^"]*"[^>]*url\(\'\/images\/site\/home-hero-mobile\.jpg\'\)/s',
+            $html,
+            'O hero mobile (retrato) deve aparecer apenas abaixo do breakpoint md.',
+        );
+        $this->assertMatchesRegularExpression(
+            '/class="[^"]*hidden md:block[^"]*"[^>]*url\(\'\/images\/site\/home-hero\.jpg\'\)/s',
+            $html,
+            'O hero desktop (panorâmico) deve aparecer apenas a partir do breakpoint md.',
+        );
+    }
+
     public function test_how_to_donate_hero_image_is_managed_by_site_asset(): void
     {
         SiteAsset::query()->create([
@@ -35,6 +62,19 @@ class SiteImagesTest extends TestCase
         $this->get('/como-doar')
             ->assertOk()
             ->assertSee('https://example.com/custom-detail.jpg');
+    }
+
+    public function test_flexible_contribution_image_is_managed_by_site_asset(): void
+    {
+        SiteAsset::query()->create([
+            'key' => 'how-to-donate.flexible',
+            'label' => 'Como Presentear — Contribuição Flexível',
+            'fallback_url' => 'https://example.com/custom-flexible.jpg',
+        ]);
+
+        $this->get('/como-doar')
+            ->assertOk()
+            ->assertSee('https://example.com/custom-flexible.jpg');
     }
 
     public function test_gift_without_image_uses_managed_placeholder_on_listing(): void

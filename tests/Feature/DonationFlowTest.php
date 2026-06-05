@@ -12,6 +12,17 @@ class DonationFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_flexible_contribution_card_links_straight_to_direct_donation_form(): void
+    {
+        $html = $this->get('/como-doar')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/href="\/doar\/direto"[\s\S]{0,400}?Contribuir com Valor Livre/',
+            $html,
+            'O botão "Contribuir com Valor Livre" deve levar direto ao formulário de valor livre.',
+        );
+    }
+
     public function test_direct_donation_creates_pending_donation_and_redirects_to_pix(): void
     {
         $response = $this->post('/checkout', [

@@ -27,14 +27,15 @@ class SiteAssetForm
                             ->label('Imagem')
                             ->image()
                             ->imageEditor()
+                            ->disk('public')
                             ->directory('site')
                             ->visibility('public')
                             ->maxSize(8192)
                             ->helperText('Se deixar vazio, o site usará a imagem de fallback abaixo.'),
                         TextInput::make('fallback_url')
                             ->label('URL de fallback')
-                            ->url()
-                            ->helperText('Mostrada enquanto não houver upload.'),
+                            ->rule('regex:#^(https?://|/)#')
+                            ->helperText('Mostrada enquanto não houver upload. Aceita URL completa ou caminho do site (ex.: /images/site/home-hero.jpg).'),
                     ]),
             ]);
     }

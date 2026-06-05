@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Gift;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -36,14 +37,16 @@ class MobileUsabilityTest extends TestCase
         );
     }
 
-    public function test_gallery_images_have_loading_background(): void
+    public function test_gift_listing_images_have_loading_background(): void
     {
-        $html = $this->get('/')->getContent();
+        Gift::factory()->create(['is_active' => true]);
+
+        $html = $this->get('/presentes')->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/id="nossa-historia"[\s\S]*?class="relative col-span-1 md:row-span-2 overflow-hidden aspect-\[3\/4\] md:aspect-auto bg-surface-light/',
+            '/class="aspect-\[4\/3\] bg-cover bg-center bg-surface-light/',
             $html,
-            'Containers da galeria precisam de bg-surface-light enquanto a imagem carrega.',
+            'Imagens dos presentes precisam de bg-surface-light enquanto carregam.',
         );
     }
 }
