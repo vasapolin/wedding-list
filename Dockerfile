@@ -26,6 +26,9 @@ RUN npm run build
 # ---------- Stage 3: Runtime (FrankenPHP) ----------
 FROM dunglas/frankenphp:1-php8.2
 
+# Compile PHP extensions single-threaded so the heavy intl/gd source builds
+# don't spike memory and get OOM-killed on small build hosts.
+ENV MAKEFLAGS="-j1"
 RUN install-php-extensions pdo_sqlite opcache intl gd zip bcmath
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
