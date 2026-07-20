@@ -2,8 +2,10 @@
 set -e
 
 mkdir -p /data
+FRESH_DATABASE=0
 if [ ! -f /data/database.sqlite ]; then
     touch /data/database.sqlite
+    FRESH_DATABASE=1
 fi
 chown -R www-data:www-data /data
 chmod 664 /data/database.sqlite
@@ -28,7 +30,12 @@ if [ ! -L /app/public/storage ]; then
 fi
 
 php artisan migrate --force --no-interaction
-php artisan db:seed --force --no-interaction || true
+
+# Seed only when the database was just created. Re-seeding on every boot
+# resurrected admin-deleted gifts/site assets, so it now runs once per volume.
+if [ "$FRESH_DATABASE" = "1" ]; then
+    php artisan db:seed --force --no-interaction || true
+fi
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
