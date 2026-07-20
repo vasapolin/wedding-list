@@ -198,6 +198,54 @@
 </section>
 
 {{-- ============================================================
+     LOCATION / MAP
+     ============================================================ --}}
+<section class="py-28 bg-black" id="local">
+    <div class="max-w-3xl mx-auto px-6">
+
+        <div class="bg-surface border border-surface-border p-10 md:p-16 flex flex-col items-center gap-8 text-center" data-reveal>
+
+            <div class="flex flex-col gap-3">
+                <p class="font-sans text-[10px] tracking-[0.35em] uppercase text-coastal">O Grande Dia</p>
+                <h2 class="font-serif text-4xl md:text-5xl text-vanilla">Onde Vamos Celebrar</h2>
+            </div>
+
+            <div class="w-full border border-surface-border overflow-hidden">
+                <iframe
+                    src="https://maps.google.com/maps?q=Rua%20Ronco%20D%27%C3%81gua%2C%20238%2C%20Itinga%2C%20Joinville%20-%20SC&amp;output=embed"
+                    title="Mapa do local do casamento"
+                    class="w-full h-[300px] md:h-[380px] block"
+                    style="border:0;"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen
+                ></iframe>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <p class="font-serif text-2xl md:text-3xl text-vanilla">Rua Ronco D&rsquo;&Aacute;gua, 238</p>
+                <p class="font-sans text-sm text-ink-muted tracking-wide">Itinga &middot; Joinville, SC</p>
+            </div>
+
+            <a
+                href="https://maps.app.goo.gl/AbXKbQnjr3345H6n7"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-sans text-xs tracking-[0.25em] uppercase px-9 py-4 border border-coastal text-coastal hover:bg-coastal hover:text-black transition-all duration-300 inline-flex items-center gap-3"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                Ver no mapa
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+{{-- ============================================================
      CONTACT CTA
      ============================================================ --}}
 <section class="py-28 bg-black relative overflow-hidden" id="contato" data-sparkles="6">
