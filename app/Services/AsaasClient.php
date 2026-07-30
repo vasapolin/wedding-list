@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Donation;
+use App\Models\DonationItem;
+use App\Models\Gift;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
@@ -166,16 +168,42 @@ class AsaasClient
                 'asaas_payload' => array_merge($locked->asaas_payload ?? [], ['last_charge' => $charge]),
             ]);
 
-            if ($status === Donation::STATUS_PAID && $previousStatus !== Donation::STATUS_PAID && $locked->gift_id) {
-                $locked->gift()->increment('raised_cents', $locked->amount_cents);
+            $contributions = $this->contributionsFor($locked);
+
+            if ($status === Donation::STATUS_PAID && $previousStatus !== Donation::STATUS_PAID) {
+                foreach ($contributions as [$giftId, $amountCents]) {
+                    Gift::query()->whereKey($giftId)->increment('raised_cents', $amountCents);
+                }
             }
 
-            if ($status === Donation::STATUS_REFUNDED && $previousStatus === Donation::STATUS_PAID && $locked->gift_id) {
-                $locked->gift()->decrement('raised_cents', $locked->amount_cents);
+            if ($status === Donation::STATUS_REFUNDED && $previousStatus === Donation::STATUS_PAID) {
+                foreach ($contributions as [$giftId, $amountCents]) {
+                    Gift::query()->whereKey($giftId)->decrement('raised_cents', $amountCents);
+                }
             }
         });
 
         $donation->refresh();
+    }
+
+    /**
+     * Which gifts this donation credits, and by how much. A donation spread
+     * across several gifts carries one item per gift; donations created before
+     * items existed fall back to their single `gift_id`.
+     *
+     * @return array<int, array{0: int, 1: int}>
+     */
+    protected function contributionsFor(Donation $donation): array
+    {
+        $items = $donation->items()->get();
+
+        if ($items->isNotEmpty()) {
+            return $items
+                ->map(fn (DonationItem $item): array => [$item->gift_id, $item->amount_cents])
+                ->all();
+        }
+
+        return $donation->gift_id ? [[$donation->gift_id, $donation->amount_cents]] : [];
     }
 
     protected function ensureCustomer(Donation $donation): string
@@ -229,11 +257,27 @@ class AsaasClient
 
     protected function descriptionFor(Donation $donation): string
     {
-        if ($donation->gift_id && $donation->gift) {
-            return 'Casamento Laura & Victor — '.$donation->gift->name;
+        $prefix = 'Casamento Laura & Victor — ';
+
+        $items = $donation->items()->with('gift')->get();
+
+        if ($items->isNotEmpty()) {
+            $names = $items->map(fn (DonationItem $item): ?string => $item->gift?->name)->filter();
+
+            if ($names->count() === 1) {
+                return $prefix.$names->first();
+            }
+
+            if ($names->isNotEmpty()) {
+                return $prefix.'Contribuição para '.$names->count().' presentes';
+            }
         }
 
-        return 'Casamento Laura & Victor — Doação direta';
+        if ($donation->gift_id && $donation->gift) {
+            return $prefix.$donation->gift->name;
+        }
+
+        return $prefix.'Doação direta';
     }
 
     protected function client(): PendingRequest

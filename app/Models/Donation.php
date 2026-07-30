@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Donation extends Model
 {
@@ -49,8 +50,41 @@ class Donation extends Model
         return $this->belongsTo(Gift::class);
     }
 
+    /**
+     * Per-gift contributions making up this donation. A donation may spread a
+     * partial amount across several gifts, so these items — not `gift_id` —
+     * are what credit the gifts once the payment is confirmed.
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(DonationItem::class);
+    }
+
     public function getAmountAttribute(): float
     {
         return $this->amount_cents / 100;
+    }
+
+    /**
+     * Short label for what this donation is for, or null when it is a free
+     * contribution not tied to any gift.
+     */
+    public function getGiftSummaryAttribute(): ?string
+    {
+        $names = $this->items()
+            ->with('gift')
+            ->get()
+            ->map(fn (DonationItem $item): ?string => $item->gift?->name)
+            ->filter();
+
+        if ($names->count() === 1) {
+            return $names->first();
+        }
+
+        if ($names->count() > 1) {
+            return $names->count().' presentes';
+        }
+
+        return $this->gift?->name;
     }
 }

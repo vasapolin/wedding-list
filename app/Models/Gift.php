@@ -70,6 +70,25 @@ class Gift extends Model
         return $this->hasMany(Donation::class);
     }
 
+    public function donationItems(): HasMany
+    {
+        return $this->hasMany(DonationItem::class);
+    }
+
+    /**
+     * How much is still missing to fully fund this gift. Never negative:
+     * concurrent payments can push `raised_cents` past the price.
+     */
+    public function getRemainingCentsAttribute(): int
+    {
+        return max(0, $this->price_cents - $this->raised_cents);
+    }
+
+    public function isFullyFunded(): bool
+    {
+        return $this->remaining_cents === 0;
+    }
+
     /**
      * Uploaded gift photo, falling back to the admin-managed placeholder.
      */
