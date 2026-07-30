@@ -13,6 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/presentes', [GiftController::class, 'index'])->name('gifts.index');
 
 Route::post('/carrinho/adicionar/{gift}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrinho/atualizar/{gift}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/carrinho/remover/{gift}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/carrinho/limpar', [CartController::class, 'clear'])->name('cart.clear');
 

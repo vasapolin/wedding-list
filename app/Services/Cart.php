@@ -10,7 +10,19 @@ use Illuminate\Support\Facades\Session;
 class Cart
 {
     /**
-     * @return Collection<int, array{gift: Gift, quantity: int, line_cents: int}>
+     * Smallest contribution accepted for a single gift, in cents. Matches the
+     * minimum Asaas accepts for a charge.
+     */
+    public const MIN_CONTRIBUTION_CENTS = 500;
+
+    /**
+     * Contributions currently in the cart, one line per gift.
+     *
+     * Amounts are clamped against what each gift still needs, so a gift that
+     * got funded by someone else while this cart sat in the session shrinks —
+     * or drops out entirely — instead of overshooting at checkout.
+     *
+     * @return Collection<int, array{gift: Gift, amount_cents: int}>
      */
     public function items(): Collection
     {
@@ -26,23 +38,22 @@ class Cart
             ->keyBy('id');
 
         return collect($cart)
-            ->filter(fn ($qty, $id) => isset($gifts[$id]))
-            ->map(fn (int $qty, int $id) => [
+            ->filter(fn ($amountCents, $id) => isset($gifts[$id]) && ! $gifts[$id]->isFullyFunded())
+            ->map(fn (int $amountCents, int $id) => [
                 'gift' => $gifts[$id],
-                'quantity' => $qty,
-                'line_cents' => $gifts[$id]->price_cents * $qty,
+                'amount_cents' => min($amountCents, $gifts[$id]->remaining_cents),
             ])
             ->values();
     }
 
     public function totalCents(): int
     {
-        return (int) $this->items()->sum('line_cents');
+        return (int) $this->items()->sum('amount_cents');
     }
 
     public function count(): int
     {
-        return (int) $this->items()->sum('quantity');
+        return $this->items()->count();
     }
 
     public function isEmpty(): bool

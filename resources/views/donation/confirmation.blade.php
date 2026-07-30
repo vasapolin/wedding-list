@@ -62,10 +62,25 @@
                     </div>
 
                     <div class="border-t border-surface-border pt-6 flex flex-col gap-4">
-                        <div class="flex items-baseline justify-between gap-4">
-                            <span class="font-sans text-xs text-ink-muted shrink-0">Item</span>
-                            <span class="font-sans text-sm text-vanilla text-right">{{ $donation->gift?->name ?? 'Contribuição livre para Lua de Mel' }}</span>
-                        </div>
+                        @php
+                            $contributions = $donation->items()->with('gift')->get();
+                        @endphp
+                        @forelse($contributions as $contribution)
+                            <div class="flex items-baseline justify-between gap-4">
+                                <span class="font-sans text-xs text-ink-muted shrink-0">
+                                    {{ $loop->first ? 'Presentes' : '' }}
+                                </span>
+                                <span class="font-sans text-sm text-vanilla text-right">
+                                    {{ $contribution->gift?->name ?? 'Presente removido' }}
+                                    <span class="text-coastal">R$ {{ number_format($contribution->amount_cents / 100, 2, ',', '.') }}</span>
+                                </span>
+                            </div>
+                        @empty
+                            <div class="flex items-baseline justify-between gap-4">
+                                <span class="font-sans text-xs text-ink-muted shrink-0">Item</span>
+                                <span class="font-sans text-sm text-vanilla text-right">{{ $donation->gift?->name ?? 'Contribuição livre para Lua de Mel' }}</span>
+                            </div>
+                        @endforelse
                         @if($donation->asaas_payment_id)
                             <div class="flex items-baseline justify-between gap-4">
                                 <span class="font-sans text-xs text-ink-muted shrink-0">ID do Pagamento</span>

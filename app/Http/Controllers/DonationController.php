@@ -10,6 +10,7 @@ use App\Services\Cart;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -49,6 +50,8 @@ class DonationController extends Controller
             'amount.min' => 'O valor mínimo para doação é R$ 5,00 (exigência do processador de pagamento).',
         ])->validate();
 
+        $contributions = $useCart ? $cart->items() : collect();
+
         $amountCents = $useCart
             ? $cart->totalCents()
             : (int) round(((float) $data['amount']) * 100);
@@ -57,17 +60,34 @@ class DonationController extends Controller
             return back()->withErrors(['amount' => 'Valor inválido para a doação.']);
         }
 
-        $donation = Donation::query()->create([
-            'gift_id' => $useCart ? null : ($data['gift_id'] ?? null),
-            'donor_name' => $data['donor_name'] ?? null,
-            'donor_email' => $data['donor_email'],
-            'donor_document' => preg_replace('/\D/', '', $data['donor_document']),
-            'amount_cents' => $amountCents,
-            'message' => $data['message'] ?? null,
-            'is_anonymous' => (bool) ($data['is_anonymous'] ?? false),
-            'payment_method' => $data['payment_method'],
-            'status' => Donation::STATUS_PENDING,
-        ]);
+        if ($amountCents < Cart::MIN_CONTRIBUTION_CENTS) {
+            return back()->withErrors([
+                'amount' => 'O valor mínimo para doação é R$ 5,00 (exigência do processador de pagamento).',
+            ]);
+        }
+
+        $donation = DB::transaction(function () use ($data, $useCart, $amountCents, $contributions): Donation {
+            $donation = Donation::query()->create([
+                'gift_id' => $useCart ? null : ($data['gift_id'] ?? null),
+                'donor_name' => $data['donor_name'] ?? null,
+                'donor_email' => $data['donor_email'],
+                'donor_document' => preg_replace('/\D/', '', $data['donor_document']),
+                'amount_cents' => $amountCents,
+                'message' => $data['message'] ?? null,
+                'is_anonymous' => (bool) ($data['is_anonymous'] ?? false),
+                'payment_method' => $data['payment_method'],
+                'status' => Donation::STATUS_PENDING,
+            ]);
+
+            foreach ($contributions as $contribution) {
+                $donation->items()->create([
+                    'gift_id' => $contribution['gift']->id,
+                    'amount_cents' => $contribution['amount_cents'],
+                ]);
+            }
+
+            return $donation->load('items');
+        });
 
         try {
             $asaas->createCharge($donation);

@@ -54,6 +54,12 @@
             </div>
         @endif
 
+        @error('amount')
+            <div class="mb-6 px-5 py-3 border border-red-700/40 bg-red-900/20 text-red-300 font-sans text-sm">
+                {{ $message }}
+            </div>
+        @enderror
+
         {{-- Gift Cards Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 pb-24">
 
@@ -84,17 +90,43 @@
                                 <div class="h-full bg-coastal" style="width: {{ $gift->progress_percentage }}%"></div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between pt-3 border-t border-surface-border mt-auto">
-                            <span class="font-sans text-sm text-coastal">R$ {{ number_format($gift->price_cents / 100, 2, ',', '.') }}</span>
-                            <form method="POST" action="{{ route('cart.add', $gift) }}">
-                                @csrf
-                                <button
-                                    type="submit"
-                                    class="font-sans text-sm text-ink-light hover:text-coastal transition-colors underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal"
-                                >
-                                    Adicionar ao carrinho
-                                </button>
-                            </form>
+                        <div class="pt-3 border-t border-surface-border mt-auto">
+                            @if($gift->isFullyFunded())
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="font-sans text-sm text-ink-muted">R$ {{ number_format($gift->price_cents / 100, 2, ',', '.') }}</span>
+                                    <span class="font-sans text-xs uppercase tracking-widest text-coastal border border-coastal/40 px-3 py-1.5">
+                                        Presenteado
+                                    </span>
+                                </div>
+                            @else
+                                <form method="POST" action="{{ route('cart.add', $gift) }}" class="flex flex-col gap-2.5">
+                                    @csrf
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="flex items-center flex-1 border border-surface-border bg-black focus-within:border-coastal/60 transition-colors duration-200">
+                                            <span class="pl-3 font-sans text-xs text-ink-muted">R$</span>
+                                            <input
+                                                type="number"
+                                                name="amount"
+                                                step="0.01"
+                                                min="{{ number_format(min(500, $gift->remaining_cents) / 100, 2, '.', '') }}"
+                                                max="{{ number_format($gift->remaining_cents / 100, 2, '.', '') }}"
+                                                value="{{ number_format($gift->remaining_cents / 100, 2, '.', '') }}"
+                                                class="w-full bg-transparent font-sans text-sm text-ink px-2 py-2 outline-none"
+                                                aria-label="Quanto contribuir para {{ $gift->name }}"
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            class="shrink-0 font-sans text-xs uppercase tracking-widest text-black bg-coastal hover:bg-coastal-dark transition-colors duration-200 px-4 py-2.5"
+                                        >
+                                            Contribuir
+                                        </button>
+                                    </div>
+                                    <p class="font-sans text-xs text-ink-muted">
+                                        Faltam R$ {{ number_format($gift->remaining_cents / 100, 2, ',', '.') }} — contribua com quanto puder.
+                                    </p>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -128,10 +160,12 @@
                     <div class="flex-1 flex flex-col justify-between">
                         <div>
                             <p class="font-serif text-sm text-ink leading-snug">{{ $g->name }}</p>
-                            <p class="font-sans text-xs text-ink-muted mt-0.5">{{ $item['quantity'] }} cota{{ $item['quantity'] > 1 ? 's' : '' }}</p>
+                            <p class="font-sans text-xs text-ink-muted mt-0.5">
+                                de R$ {{ number_format($g->price_cents / 100, 2, ',', '.') }}
+                            </p>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-sans text-sm text-coastal">R$ {{ number_format($item['line_cents'] / 100, 2, ',', '.') }}</span>
+                            <span class="font-sans text-sm text-coastal">R$ {{ number_format($item['amount_cents'] / 100, 2, ',', '.') }}</span>
                             <form method="POST" action="{{ route('cart.remove', $g) }}">
                                 @csrf
                                 <button class="font-sans text-xs text-ink-muted hover:text-coastal transition-colors">Remover</button>

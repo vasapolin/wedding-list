@@ -150,8 +150,39 @@
                                 <div class="w-14 h-14 shrink-0 bg-cover bg-center bg-surface-light border border-surface-border" @if($imageUrl) style="background-image: url('{{ $imageUrl }}')" @endif></div>
                                 <div class="flex-1 min-w-0">
                                     <p class="font-sans text-sm text-ink font-medium truncate">{{ $g->name }}</p>
-                                    <p class="font-sans text-xs text-ink-muted mt-1">{{ $item['quantity'] }} cota{{ $item['quantity'] > 1 ? 's' : '' }}</p>
-                                    <p class="font-sans text-sm text-coastal mt-1">R$ {{ number_format($item['line_cents'] / 100, 2, ',', '.') }}</p>
+                                    <p class="font-sans text-xs text-ink-muted mt-1">
+                                        de R$ {{ number_format($g->price_cents / 100, 2, ',', '.') }}
+                                    </p>
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <div class="flex items-center flex-1 min-w-0 border border-surface-border bg-black focus-within:border-coastal/60 transition-colors duration-200">
+                                            <span class="pl-2 font-sans text-xs text-ink-muted">R$</span>
+                                            <input
+                                                form="cart-update-{{ $g->id }}"
+                                                type="number"
+                                                name="amount"
+                                                step="0.01"
+                                                min="{{ number_format(min(500, $g->remaining_cents) / 100, 2, '.', '') }}"
+                                                max="{{ number_format($g->remaining_cents / 100, 2, '.', '') }}"
+                                                value="{{ number_format($item['amount_cents'] / 100, 2, '.', '') }}"
+                                                class="w-full min-w-0 bg-transparent font-sans text-sm text-coastal px-1.5 py-1.5 outline-none"
+                                                aria-label="Contribuição para {{ $g->name }}"
+                                            />
+                                        </div>
+                                        <button
+                                            form="cart-update-{{ $g->id }}"
+                                            type="submit"
+                                            class="shrink-0 font-sans text-xs text-ink-muted hover:text-coastal transition-colors duration-200 underline underline-offset-4 decoration-ink-muted/40 hover:decoration-coastal"
+                                        >
+                                            Salvar
+                                        </button>
+                                    </div>
+                                    <button
+                                        form="cart-remove-{{ $g->id }}"
+                                        type="submit"
+                                        class="font-sans text-xs text-ink-muted hover:text-coastal transition-colors duration-200 mt-1.5"
+                                    >
+                                        Remover
+                                    </button>
                                 </div>
                             </div>
                         @endforeach
@@ -190,6 +221,13 @@
             </aside>
 
         </form>
+
+        {{-- Targets for the summary's amount controls. Forms cannot nest, so the
+             controls above reference these by id via the HTML form attribute. --}}
+        @foreach($cart->items() as $item)
+            <form method="POST" action="{{ route('cart.update', $item['gift']) }}" id="cart-update-{{ $item['gift']->id }}" class="hidden">@csrf</form>
+            <form method="POST" action="{{ route('cart.remove', $item['gift']) }}" id="cart-remove-{{ $item['gift']->id }}" class="hidden">@csrf</form>
+        @endforeach
         @endif
 
     </div>

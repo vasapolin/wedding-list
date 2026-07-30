@@ -15,7 +15,7 @@
                 </p>
                 <p class="font-serif text-5xl font-light text-ink mb-3">R$ {{ number_format($donation->amount_cents / 100, 2, ',', '.') }}</p>
                 <p class="font-sans text-sm text-ink-muted">
-                    {{ $donation->gift?->name ?? 'Contribuição direta para Laura & Victor' }}
+                    {{ $donation->gift_summary ?? 'Contribuição direta para Laura & Victor' }}
                 </p>
             </div>
 
