@@ -18,6 +18,7 @@ class DonationsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['gift', 'items.gift']))
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('created_at')
@@ -32,10 +33,10 @@ class DonationsTable
                     ->label('E-mail')
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('gift.name')
+                TextColumn::make('gift_summary')
                     ->label('Presente')
                     ->placeholder('Doação livre')
-                    ->searchable(),
+                    ->searchable(query: fn (Builder $query, string $search): Builder => self::searchByGiftName($query, $search)),
                 TextColumn::make('amount_cents')
                     ->label('Valor')
                     ->money('BRL', divideBy: 100)
@@ -100,5 +101,16 @@ class DonationsTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Match the gift a donation is for, whether it is tied through `gift_id`
+     * or through the per-gift items of a cart donation.
+     */
+    protected static function searchByGiftName(Builder $query, string $search): Builder
+    {
+        return $query->where(fn (Builder $q): Builder => $q
+            ->whereHas('gift', fn (Builder $gift): Builder => $gift->where('name', 'like', "%{$search}%"))
+            ->orWhereHas('items.gift', fn (Builder $gift): Builder => $gift->where('name', 'like', "%{$search}%")));
     }
 }

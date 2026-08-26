@@ -71,9 +71,9 @@ class Donation extends Model
      */
     public function getGiftSummaryAttribute(): ?string
     {
-        $names = $this->items()
-            ->with('gift')
-            ->get()
+        $this->loadMissing('items.gift');
+
+        $names = $this->items
             ->map(fn (DonationItem $item): ?string => $item->gift?->name)
             ->filter();
 

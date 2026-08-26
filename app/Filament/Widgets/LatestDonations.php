@@ -18,7 +18,7 @@ class LatestDonations extends TableWidget
     {
         return $table
             ->heading('Últimas doações')
-            ->query(fn (): Builder => Donation::query()->latest()->limit(10))
+            ->query(fn (): Builder => Donation::query()->with(['gift', 'items.gift'])->latest()->limit(10))
             ->paginated(false)
             ->columns([
                 TextColumn::make('created_at')
@@ -27,7 +27,7 @@ class LatestDonations extends TableWidget
                 TextColumn::make('donor_name')
                     ->label('Doador')
                     ->formatStateUsing(fn ($state, Donation $record) => $record->is_anonymous ? 'Anônimo' : ($state ?? '—')),
-                TextColumn::make('gift.name')
+                TextColumn::make('gift_summary')
                     ->label('Presente')
                     ->placeholder('Doação livre'),
                 TextColumn::make('amount_cents')
