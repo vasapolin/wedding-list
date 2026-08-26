@@ -326,10 +326,22 @@ ASAAS_ENV=production
 
 - `gifts` — wedding gifts; price/raised stored in cents; `is_active` + `sort_order` control public listing.
 - `donations` — pending → paid lifecycle driven by Asaas webhook. `gift_id` is nullable (cart/free donations aren't tied to a single gift).
+- `donation_items` — one row per gift a donation contributes to, with its own `amount_cents`. These, not `gift_id`, are what credit `gifts.raised_cents` when the payment confirms; donations created before items existed fall back to their single `gift_id`. Use `Donation::$gift_summary` (never `gift.name`) to label what a donation is for.
 - `messages` — public mural; `is_approved` defaults to true (no moderation v1).
-- `site_assets` — keyed CMS images (e.g. `home.hero`, `home.gallery.1`); `SiteAsset::url($key, $default)` reads the upload or `fallback_url`.
+- `site_assets` — keyed CMS images (e.g. `home.hero`, `home.gallery.1`); `SiteAsset::url($key, $default)` reads the upload or `fallback_url`. Local fallbacks are WebP under `public/images/site/`. Because the seeder only runs on a fresh volume, changing a shipped fallback path needs a data migration to repoint existing rows — see `point_site_asset_fallbacks_to_webp`.
 
 ### Cart
 
-- `App\Services\Cart` reads/writes session under `wedding_cart`. Globally injected into Blade views as `$cart` via `View::composer('*')` in `AppServiceProvider`.
+- `App\Services\Cart` reads/writes session under `CartController::SESSION_KEY` (currently `wedding_cart_v2`). Globally injected into Blade views as `$cart` via `View::composer('*')` in `AppServiceProvider`.
+- The cart stores a contribution amount in cents per gift, not a quantity. Bump the key's version suffix whenever that shape changes so carts left in visitors' sessions are dropped instead of misread.
+
+### Running the test suite
+
+- The suite needs the `pdo_sqlite` and `intl` PHP extensions. If the local CLI lacks them (`php -m | grep sqlite`), install `php8.4-sqlite3` and `php8.4-intl`, or run the suite in a container matching the Dockerfile's extension set:
+
+```bash
+docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD":/app -w /app <image> php artisan test --compact
+```
+
+Always pass `--user`, otherwise root-owned files land in `storage/framework/testing` and later runs fail with permission errors.
 
