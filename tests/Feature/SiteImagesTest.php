@@ -16,23 +16,23 @@ class SiteImagesTest extends TestCase
         SiteAsset::query()->create([
             'key' => 'home.hero',
             'label' => 'Home — Hero (fundo)',
-            'fallback_url' => '/images/site/home-hero.jpg',
+            'fallback_url' => '/images/site/home-hero.webp',
         ]);
         SiteAsset::query()->create([
             'key' => 'home.hero.mobile',
             'label' => 'Home — Hero (fundo mobile)',
-            'fallback_url' => '/images/site/home-hero-mobile.jpg',
+            'fallback_url' => '/images/site/home-hero-mobile.webp',
         ]);
 
         $html = $this->get('/')->assertOk()->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/class="[^"]*md:hidden[^"]*"[^>]*url\(\'\/images\/site\/home-hero-mobile\.jpg\'\)/s',
+            '/class="[^"]*md:hidden[^"]*"[^>]*url\(\'\/images\/site\/home-hero-mobile\.webp\'\)/s',
             $html,
             'O hero mobile (retrato) deve aparecer apenas abaixo do breakpoint md.',
         );
         $this->assertMatchesRegularExpression(
-            '/class="[^"]*hidden md:block[^"]*"[^>]*url\(\'\/images\/site\/home-hero\.jpg\'\)/s',
+            '/class="[^"]*hidden md:block[^"]*"[^>]*url\(\'\/images\/site\/home-hero\.webp\'\)/s',
             $html,
             'O hero desktop (panorâmico) deve aparecer apenas a partir do breakpoint md.',
         );

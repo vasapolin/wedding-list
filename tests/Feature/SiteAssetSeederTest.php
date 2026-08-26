@@ -16,13 +16,13 @@ class SiteAssetSeederTest extends TestCase
         $this->seed(SiteAssetSeeder::class);
 
         $expected = [
-            'home.hero' => '/images/site/home-hero.jpg',
-            'home.hero.mobile' => '/images/site/home-hero-mobile.jpg',
-            'messages.hero' => '/images/site/messages-hero.jpg',
-            'how-to-donate.hero' => '/images/site/how-to-donate-hero.jpg',
-            'how-to-donate.detail' => '/images/site/how-to-donate-detail.jpg',
-            'how-to-donate.flexible' => '/images/site/how-to-donate-flexible.jpg',
-            'confirmation.hero' => '/images/site/confirmation-hero.jpg',
+            'home.hero' => '/images/site/home-hero.webp',
+            'home.hero.mobile' => '/images/site/home-hero-mobile.webp',
+            'messages.hero' => '/images/site/messages-hero.webp',
+            'how-to-donate.hero' => '/images/site/how-to-donate-hero.webp',
+            'how-to-donate.detail' => '/images/site/how-to-donate-detail.webp',
+            'how-to-donate.flexible' => '/images/site/how-to-donate-flexible.webp',
+            'confirmation.hero' => '/images/site/confirmation-hero.webp',
         ];
 
         foreach ($expected as $key => $fallbackUrl) {
@@ -61,7 +61,7 @@ class SiteAssetSeederTest extends TestCase
 
         $asset = SiteAsset::query()->where('key', 'home.hero')->firstOrFail();
 
-        $this->assertSame('/images/site/home-hero.jpg', $asset->fallback_url);
+        $this->assertSame('/images/site/home-hero.webp', $asset->fallback_url);
         $this->assertSame('site/custom-upload.jpg', $asset->image_path);
     }
 

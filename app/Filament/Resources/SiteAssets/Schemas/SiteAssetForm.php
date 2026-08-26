@@ -35,7 +35,7 @@ class SiteAssetForm
                         TextInput::make('fallback_url')
                             ->label('URL de fallback')
                             ->rule('regex:#^(https?://|/)#')
-                            ->helperText('Mostrada enquanto não houver upload. Aceita URL completa ou caminho do site (ex.: /images/site/home-hero.jpg).'),
+                            ->helperText('Mostrada enquanto não houver upload. Aceita URL completa ou caminho do site (ex.: /images/site/home-hero.webp).'),
                     ]),
             ]);
     }
